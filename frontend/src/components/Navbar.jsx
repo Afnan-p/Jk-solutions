@@ -82,7 +82,6 @@ const Navbar = () => {
         {/* Desktop Links */}
         <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-12 z-10">
           <Link to="/" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">Home</Link>
-          <Link to="/about" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">About</Link>
           
           {/* Services Mega Menu Trigger */}
           <div 
@@ -214,6 +213,7 @@ const Navbar = () => {
               )}
             </AnimatePresence>
           </div>
+          <Link to="/about" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">About</Link>
           <Link to="/contact" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">Contact</Link>
         </div>
 
@@ -252,7 +252,6 @@ const Navbar = () => {
           >
             <div className="px-6 py-4 flex flex-col gap-4">
               <Link to="/" onClick={() => setMobileMenuOpen(false)} className="text-lg font-medium text-white hover:text-accent transition-colors">Home</Link>
-              <Link to="/about" onClick={() => setMobileMenuOpen(false)} className="text-lg font-medium text-white hover:text-accent transition-colors">About</Link>
               
               {/* Mobile Services Accordion */}
               <div>
@@ -307,6 +306,7 @@ const Navbar = () => {
                   )}
                 </AnimatePresence>
               </div>
+              <Link to="/about" onClick={() => setMobileMenuOpen(false)} className="text-lg font-medium text-white hover:text-accent transition-colors">About</Link>
               <Link to="/contact" onClick={() => setMobileMenuOpen(false)} className="text-lg font-medium text-white hover:text-accent transition-colors">Contact</Link>
             </div>
             <div className="px-6 pb-6">
