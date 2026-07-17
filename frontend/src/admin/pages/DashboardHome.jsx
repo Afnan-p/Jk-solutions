@@ -106,7 +106,7 @@ const DashboardHome = () => {
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-xl font-bold">Quick Actions</h3>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Link to="/admin/projects/security" className="bg-white/5 hover:bg-white/10 p-4 rounded-xl text-left transition-colors border border-white/5 block">
               <span className="block text-white font-medium mb-1">Add Project</span>
               <span className="text-xs text-gray-500">Update your portfolio</span>

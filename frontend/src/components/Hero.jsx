@@ -157,7 +157,7 @@ const Hero = () => {
                   </p>
 
                   {/* Features Grid */}
-                  <div className="slide-element grid grid-cols-2 gap-x-8 gap-y-5 mb-10 max-w-lg">
+                  <div className="slide-element grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 sm:gap-y-5 mb-10 max-w-lg">
                     {slide.features.map((feature, idx) => (
                       <div key={idx} className="flex items-center gap-2 text-gray-300 font-medium">
                         <CheckCircle2 size={18} className="text-accent" />
@@ -252,8 +252,8 @@ const Hero = () => {
 const HeroControls = () => {
   const swiper = useSwiper();
   return (
-    <div className="absolute z-20 bottom-12 left-1/2 -translate-x-1/2 pointer-events-none">
-      <div className="bg-[#101010]/80 backdrop-blur-xl border border-white/10 rounded-full px-6 py-3 flex items-center gap-6 shadow-2xl pointer-events-auto">
+    <div className="absolute z-20 bottom-8 md:bottom-12 left-1/2 -translate-x-1/2 pointer-events-none">
+      <div className="bg-[#101010]/80 backdrop-blur-xl border border-white/10 rounded-full px-5 py-2 md:px-6 md:py-3 flex items-center gap-4 md:gap-6 shadow-2xl pointer-events-auto">
         <button 
           onClick={() => swiper.slidePrev()}
           className="text-gray-400 hover:text-white transition-colors cursor-pointer"

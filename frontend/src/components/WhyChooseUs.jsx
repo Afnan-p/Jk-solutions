@@ -65,7 +65,7 @@ const WhyChooseUs = () => {
             <motion.div 
               animate={{ y: [-10, 10, -10] }}
               transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
-              className="absolute -bottom-8 -left-8 glass p-6 rounded-2xl z-20 flex items-center gap-4"
+              className="absolute -bottom-6 left-4 sm:-bottom-8 sm:-left-8 glass p-4 md:p-6 rounded-2xl z-20 flex items-center gap-3 md:gap-4 shadow-2xl"
             >
               <div className="text-5xl font-bold text-accent">12+</div>
               <div className="text-sm font-medium text-white uppercase tracking-wider">Years of<br/>Experience</div>

@@ -18,6 +18,20 @@ const AdminLayout = () => {
     }
   }, [navigate]);
 
+  // Handle responsive sidebar initial state
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setSidebarOpen(false);
+      } else {
+        setSidebarOpen(true);
+      }
+    };
+    handleResize(); // Initial check
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const handleLogout = () => {
     localStorage.removeItem('adminInfo');
     navigate('/admin/login');
@@ -47,6 +61,21 @@ const AdminLayout = () => {
 
   return (
     <div className="h-screen overflow-hidden bg-[#050505] text-white flex">
+      {/* Sidebar Overlay for Mobile */}
+      <AnimatePresence>
+        {sidebarOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => {
+              if (window.innerWidth < 768) setSidebarOpen(false);
+            }}
+            className="md:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+          />
+        )}
+      </AnimatePresence>
+
       {/* Sidebar */}
       <AnimatePresence mode="wait">
         {sidebarOpen && (
@@ -54,7 +83,7 @@ const AdminLayout = () => {
             initial={{ width: 0, opacity: 0 }}
             animate={{ width: 280, opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
-            className="bg-[#0a0a0a] border-r border-white/5 flex flex-col flex-shrink-0"
+            className="bg-[#0a0a0a] border-r border-white/5 flex flex-col flex-shrink-0 absolute md:relative z-50 h-full"
           >
             <div className="p-6 border-b border-white/5 flex justify-between items-center">
               <Link to="/" className="text-2xl font-bold tracking-wider">
@@ -69,6 +98,9 @@ const AdminLayout = () => {
                   <Link
                     key={item.name}
                     to={item.path}
+                    onClick={() => {
+                      if (window.innerWidth < 768) setSidebarOpen(false);
+                    }}
                     className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                       isActive 
                         ? 'bg-accent/10 text-accent font-medium' 
@@ -90,6 +122,9 @@ const AdminLayout = () => {
                   <Link
                     key={`security-${item.name}`}
                     to={item.path}
+                    onClick={() => {
+                      if (window.innerWidth < 768) setSidebarOpen(false);
+                    }}
                     className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                       isActive 
                         ? 'bg-accent/10 text-accent font-medium' 
@@ -111,6 +146,9 @@ const AdminLayout = () => {
                   <Link
                     key={`design-${item.name}`}
                     to={item.path}
+                    onClick={() => {
+                      if (window.innerWidth < 768) setSidebarOpen(false);
+                    }}
                     className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                       isActive 
                         ? 'bg-purple-500/10 text-purple-400 font-medium' 
