@@ -62,6 +62,18 @@ const slides = [
     primaryAction: 'Get Free Quote',
     secondaryAction: 'Explore Solar',
     secondaryIcon: ShieldCheck
+  },
+  {
+    id: 5,
+    image: '/design_printing.png', 
+    label: 'CREATIVE DESIGN & PRINTING',
+    heading1: 'BRING YOUR',
+    heading2: 'BRAND TO LIFE.',
+    description: 'Transform your ideas into impactful branding with premium graphic design, commercial printing, customized gifts, trophies, ID cards, flex banners, corporate stationery, and complete business branding solutions. From concept to delivery — everything under one roof.',
+    features: ['Graphic Design', 'Premium Printing', 'Trophy & Awards', 'Customized Gifts'],
+    primaryAction: 'Get Free Design Consultation',
+    secondaryAction: 'Explore Design Services',
+    secondaryIcon: Palette
   }
 ];
 
