@@ -190,15 +190,7 @@ const Hero = () => {
         <HeroControls />
       </Swiper>
 
-      {/* Scroll Indicator */}
-      <motion.div 
-        animate={{ y: [0, 10, 0] }}
-        transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-        className="absolute z-20 bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center md:hidden"
-      >
-        <span className="text-xs text-white/50 tracking-widest uppercase mb-2">Scroll</span>
-        <ChevronDown size={24} className="text-white/50" />
-      </motion.div>
+
 
       {/* CSS for custom Swiper active states and animations */}
       <style dangerouslySetInnerHTML={{__html: `
