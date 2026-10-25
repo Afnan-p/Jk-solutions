@@ -4,24 +4,28 @@ import { useState } from 'react';
 
 const faqs = [
   {
-    question: "Do you provide installation services outside Kerala?",
-    answer: "Currently, our primary focus is within Kerala. However, for large-scale enterprise or luxury villa projects, our team is equipped to travel across South India."
+    question: "What security solutions do you provide?",
+    answer: "We provide CCTV surveillance, home automation, gate automation, access control & smart locks, solar systems, and enterprise networking."
   },
   {
-    question: "What is the warranty period for your CCTV and Automation products?",
-    answer: "We offer a standard 1-year comprehensive warranty on all products and installations. Extended warranty and Annual Maintenance Contracts (AMC) are also available."
+    question: "Do you provide CCTV installation and maintenance?",
+    answer: "Yes, we handle complete turn-key CCTV installation, mobile app configuration, and routine Annual Maintenance Contracts (AMC)."
   },
   {
-    question: "Can I control my home automation system remotely?",
-    answer: "Yes, absolutely. Our smart home solutions allow you to control lighting, climate, security, and gates from anywhere in the world using a secure mobile application."
+    question: "Can I automate my existing home?",
+    answer: "Yes, we offer both wired setups for new homes and retrofit wireless automation modules that upgrade your existing switches without rewiring."
   },
   {
-    question: "How long does a typical home automation installation take?",
-    answer: "For a standard 3BHK villa, wireless automation takes 2-3 days. Wired, comprehensive systems during the construction phase can take a few weeks aligned with the building progress."
+    question: "Do you provide customized security solutions?",
+    answer: "Yes, every system is customized based on your property layout, security requirements, and budget after an on-site inspection."
   },
   {
-    question: "Do you use generic brands for security cameras?",
-    answer: "No. We strictly partner with industry-leading, premium brands like Hikvision, Dahua, CP Plus, and Ajax to ensure maximum reliability and cutting-edge features."
+    question: "How long does installation usually take?",
+    answer: "Standard CCTV or gate automation takes 1–2 days. Comprehensive multi-tier smart home systems take 3–7 days."
+  },
+  {
+    question: "Do you provide after-installation support?",
+    answer: "Yes, we provide full warranty support, AMC packages, and dedicated 24/7 technical assistance."
   }
 ];
 
@@ -29,58 +33,62 @@ const FAQSection = () => {
   const [openIndex, setOpenIndex] = useState(0);
 
   return (
-    <section className="py-24 bg-[#050505] border-t border-white/5">
-      <div className="container mx-auto px-6 max-w-4xl">
-        <div className="text-center mb-16">
-          <motion.h2 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-4xl md:text-5xl font-bold mb-6"
-          >
-            Frequently Asked <span className="text-accent">Questions</span>
-          </motion.h2>
-        </div>
+    <div className="w-full">
+      <span className="text-[11px] font-extrabold uppercase tracking-[0.25em] text-[#9E8148] block mb-2">
+        — FAQ —
+      </span>
 
-        <div className="space-y-4">
-          {faqs.map((faq, index) => (
-            <motion.div 
+      <h2 className="text-3xl md:text-4xl font-extrabold text-[#1B1D1A] tracking-tight mb-8 font-[#Plus Jakarta Sans]">
+        Frequently Asked <span className="text-[#C6A15B]">Questions</span>
+      </h2>
+
+      <div className="space-y-3 relative z-10">
+        {faqs.map((faq, index) => {
+          const isOpen = openIndex === index;
+          return (
+            <div 
               key={index}
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              className="glass rounded-xl overflow-hidden"
+              className={`glass-panel-light rounded-2xl overflow-hidden transition-all duration-300 border ${
+                isOpen ? 'border-[#C6A15B] shadow-md' : 'border-[#C6A15B]/20 hover:border-[#C6A15B]/50'
+              }`}
             >
               <button 
-                onClick={() => setOpenIndex(openIndex === index ? -1 : index)}
-                className="w-full text-left px-6 py-5 flex justify-between items-center focus:outline-none"
+                onClick={() => setOpenIndex(isOpen ? -1 : index)}
+                className="w-full text-left px-5 py-4 flex justify-between items-center focus:outline-none cursor-pointer group"
+                aria-expanded={isOpen}
               >
-                <span className="text-lg font-medium text-white pr-8">{faq.question}</span>
-                <span className={`text-accent transition-transform duration-300 flex-shrink-0 ${openIndex === index ? 'rotate-180' : ''}`}>
-                  {openIndex === index ? <Minus size={20} /> : <Plus size={20} />}
+                <span className={`text-sm sm:text-base font-bold transition-colors pr-4 ${
+                  isOpen ? 'text-[#C6A15B]' : 'text-[#1B1D1A] group-hover:text-[#C6A15B]'
+                }`}>
+                  {faq.question}
                 </span>
+
+                <div className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-300 ${
+                  isOpen ? 'bg-[#C6A15B] text-[#101312] rotate-180 shadow-sm' : 'glass-pill text-[#1B1D1A]'
+                }`}>
+                  {isOpen ? <Minus size={14} /> : <Plus size={14} />}
+                </div>
               </button>
               
-              <AnimatePresence>
-                {openIndex === index && (
+              <AnimatePresence initial={false}>
+                {isOpen && (
                   <motion.div
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.3 }}
+                    transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
                   >
-                    <div className="px-6 pb-5 text-gray-400 border-t border-white/5 pt-4">
+                    <div className="px-5 pb-4 text-[#77766F] text-xs sm:text-sm leading-relaxed border-t border-[#C6A15B]/15 pt-3 bg-white/30 backdrop-blur-xs">
                       {faq.answer}
                     </div>
                   </motion.div>
                 )}
               </AnimatePresence>
-            </motion.div>
-          ))}
-        </div>
+            </div>
+          );
+        })}
       </div>
-    </section>
+    </div>
   );
 };
 

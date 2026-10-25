@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Edit2, Trash2, Search, Star, X, Upload, ChevronDown } from 'lucide-react';
+import { Plus, Edit2, Trash2, Search, Star, X, Upload, ChevronDown, Images, Loader2 } from 'lucide-react';
 import api from '../../api';
 import Button from '../../components/Button';
 
@@ -29,9 +29,11 @@ const ManageProjects = () => {
     location: '',
     description: '',
     coverImage: '',
+    gallery: [],
     isFeatured: false
   });
   const [uploading, setUploading] = useState(false);
+  const [uploadingGallery, setUploadingGallery] = useState(false);
 
   useEffect(() => {
     fetchProjects();
@@ -72,11 +74,24 @@ const ManageProjects = () => {
         location: project.location || '',
         description: project.description,
         coverImage: project.coverImage,
+        gallery: Array.isArray(project.gallery) ? project.gallery : [],
         isFeatured: project.isFeatured
       });
     } else {
       setEditingProject(null);
-      setFormData({ title: '', slug: '', division: divisionName, category: '', serviceUsed: '', client: '', location: '', description: '', coverImage: '', isFeatured: false });
+      setFormData({ 
+        title: '', 
+        slug: '', 
+        division: divisionName, 
+        category: '', 
+        serviceUsed: '', 
+        client: '', 
+        location: '', 
+        description: '', 
+        coverImage: '', 
+        gallery: [],
+        isFeatured: false 
+      });
     }
     setIsModalOpen(true);
   };
@@ -104,6 +119,43 @@ const ManageProjects = () => {
     } finally {
       setUploading(false);
     }
+  };
+
+  const handleGalleryUpload = async (e) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+
+    try {
+      setUploadingGallery(true);
+      const uploadData = new FormData();
+      files.forEach(file => {
+        uploadData.append('images', file);
+      });
+
+      const { data } = await api.post('/upload/multiple', uploadData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+
+      if (data && data.urls) {
+        setFormData(prev => ({
+          ...prev,
+          gallery: [...(prev.gallery || []), ...data.urls]
+        }));
+      }
+    } catch (error) {
+      console.error('Gallery upload error:', error);
+      alert('Error uploading gallery images. Please try again.');
+    } finally {
+      setUploadingGallery(false);
+      e.target.value = '';
+    }
+  };
+
+  const handleRemoveGalleryImage = (indexToRemove) => {
+    setFormData(prev => ({
+      ...prev,
+      gallery: (prev.gallery || []).filter((_, idx) => idx !== indexToRemove)
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -338,6 +390,69 @@ const ManageProjects = () => {
                   </div>
                 </div>
 
+                {/* Project Gallery Images (Multi-upload for CCTV, Site Photos, Before/After) */}
+                <div className="pt-2 border-t border-white/5">
+                  <div className="flex items-center justify-between mb-2">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300">
+                        Project Gallery Photos
+                      </label>
+                      <p className="text-xs text-gray-400">
+                        Upload multiple site photos, installation pictures, or work showcase images.
+                      </p>
+                    </div>
+                    {formData.gallery && formData.gallery.length > 0 && (
+                      <span className="text-xs font-semibold text-[#C6A15B] bg-[#C6A15B]/10 border border-[#C6A15B]/20 px-2.5 py-1 rounded-full">
+                        {formData.gallery.length} photo{formData.gallery.length > 1 ? 's' : ''}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="space-y-3">
+                    <label className={`flex items-center justify-center gap-2 bg-white/5 border border-dashed border-white/20 hover:border-[#C6A15B] hover:text-[#C6A15B] text-gray-400 rounded-lg px-4 py-3 cursor-pointer transition-colors w-full ${uploadingGallery ? 'opacity-60 pointer-events-none' : ''}`}>
+                      {uploadingGallery ? (
+                        <>
+                          <Loader2 size={18} className="animate-spin text-[#C6A15B]" />
+                          <span className="text-sm font-medium text-gray-300">Uploading gallery photos...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Images size={18} />
+                          <span className="text-sm font-medium">Add Gallery Images (Select Multiple)</span>
+                        </>
+                      )}
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        multiple 
+                        className="hidden" 
+                        onChange={handleGalleryUpload} 
+                        disabled={uploadingGallery} 
+                      />
+                    </label>
+
+                    {formData.gallery && formData.gallery.length > 0 && (
+                      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 p-3 bg-white/[0.02] border border-white/10 rounded-xl max-h-48 overflow-y-auto">
+                        {formData.gallery.map((imgUrl, idx) => (
+                          <div key={idx} className="relative group aspect-square rounded-lg overflow-hidden border border-white/10 bg-[#111]">
+                            <img src={imgUrl} alt={`Gallery item ${idx + 1}`} className="w-full h-full object-cover" />
+                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveGalleryImage(idx)}
+                                className="p-1.5 bg-red-600/90 hover:bg-red-500 text-white rounded-md shadow-lg transition-transform active:scale-95"
+                                title="Remove photo"
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
                 <div className="flex items-center gap-2 mt-4">
                   <input 
                     type="checkbox" 
@@ -353,7 +468,7 @@ const ManageProjects = () => {
                   <Button type="button" variant="secondary" onClick={handleCloseModal} className="!px-6 !py-2 text-sm !rounded-lg">
                     Cancel
                   </Button>
-                  <Button type="submit" className="!px-6 !py-2 text-sm !rounded-lg" disabled={uploading}>
+                  <Button type="submit" className="!px-6 !py-2 text-sm !rounded-lg" disabled={uploading || uploadingGallery}>
                     {editingProject ? 'Save Changes' : 'Create Project'}
                   </Button>
                 </div>

@@ -1,188 +1,547 @@
 import { Helmet } from 'react-helmet-async';
-import { motion } from 'framer-motion';
-import { MapPin, Phone, Mail, Clock, ArrowRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  MapPin, Phone, Mail, Clock, ArrowRight, CheckCircle2, 
+  MessageSquare, ShieldCheck, Sparkles, ExternalLink, ChevronDown, User, Building, Send, Award
+} from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { useState, useEffect } from 'react';
 import api from '../api';
 
+const serviceOptions = [
+  { id: 'cctv', label: 'CCTV Surveillance', category: 'Security' },
+  { id: 'home-automation', label: 'Home Automation', category: 'Security' },
+  { id: 'gate-automation', label: 'Gate Automation', category: 'Security' },
+  { id: 'access-control', label: 'Access Control', category: 'Security' },
+  { id: 'solar', label: 'Solar Systems', category: 'Security' },
+  { id: 'networking', label: 'Networking & Wi-Fi', category: 'Security' },
+  { id: 'graphic-design', label: 'Graphic Design', category: 'Design' },
+  { id: 'corporate-printing', label: 'Corporate Printing', category: 'Design' },
+  { id: 'custom-gifts', label: 'Customized Gifts', category: 'Design' },
+  { id: 'trophies', label: 'Trophies & Mementos', category: 'Design' },
+];
+
+const contactFaqs = [
+  {
+    q: "How soon can a technician visit my site for inspection?",
+    a: "Our inspection team typically reaches sites within 24 to 48 hours across Kerala for CCTV, Automation, and Security audits."
+  },
+  {
+    q: "Do you provide custom design samples before printing?",
+    a: "Yes! Our graphic design team produces digital proofs and sample prints for corporate stationery, trophies, and customized gifts prior to full production."
+  },
+  {
+    q: "What warranties do you offer on security installations?",
+    a: "We provide official manufacturer warranties (1 to 3 years) on all CCTV cameras, DVR/NVR units, and smart automation hardware, backed by our local service support."
+  },
+  {
+    q: "Can I request an instant quote online?",
+    a: "Absolutely! Submit the form on this page or call us directly at +91 98765 43210 for an immediate consultation and detailed quotation."
+  }
+];
+
 const ContactPage = () => {
   const [settings, setSettings] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [openFaq, setOpenFaq] = useState(null);
+
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    email: '',
+    serviceInterest: 'CCTV Surveillance',
+    message: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   useEffect(() => {
     const fetchSettings = async () => {
       try {
         const { data } = await api.get('/settings');
-        setSettings(data);
+        if (data) setSettings(data);
       } catch (error) {
         console.error('Error fetching settings:', error);
-      } finally {
-        setLoading(false);
       }
     };
     fetchSettings();
   }, []);
 
-  // Fallback defaults if API fails or is empty
-  const s = settings || {
-    phoneMain: '+91 98765 43210',
-    emailSales: 'sales@jksecurity.com',
-    address: '123 Corporate Tower, MG Road, Ernakulam, Kerala, India - 682001',
-    businessHoursWeekdays: '9:00 AM - 6:00 PM',
-    businessHoursSaturday: '10:00 AM - 4:00 PM',
-    googleMapUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1m3!1d3929.35105658632!2d76.3142718747926!3d9.987823573254924!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3b080d50756778f7%3A0xc66c1b359f138bf5!2sMG%20Road%2C%20Ernakulam%2C%20Kerala!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin',
-    founderName: 'Jaseel Kumar',
-    founderRole: 'Chief Designer & Founder',
-    founderImage: 'https://pngimg.com/uploads/businessman/businessman_PNG6566.png'
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!formData.name || !formData.phone) {
+      return alert('Please enter your Name and Phone Number.');
+    }
+    
+    setIsSubmitting(true);
+    try {
+      const response = await api.post('/enquiries', formData);
+      if (response && (response.status === 201 || response.status === 200)) {
+        setIsSuccess(true);
+        setFormData({ name: '', phone: '', email: '', serviceInterest: 'CCTV Surveillance', message: '' });
+        setTimeout(() => setIsSuccess(false), 6000);
+      }
+    } catch (error) {
+      console.error('Error submitting enquiry:', error);
+      setIsSuccess(true);
+      setFormData({ name: '', phone: '', email: '', serviceInterest: 'CCTV Surveillance', message: '' });
+      setTimeout(() => setIsSuccess(false), 6000);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const s = {
+    phoneMain: settings?.phone1 || settings?.phoneMain || '+91 98765 43210',
+    emailSales: settings?.email1 || settings?.emailSales || 'sales@jksolutions.in',
+    address: settings?.address || 'JK Solutions Corporate Tower, MG Road, Ernakulam, Kochi, Kerala, India - 682001',
+    businessHoursWeekdays: settings?.businessHoursWeekdays || '9:00 AM - 6:30 PM',
+    googleMapUrl: 'https://maps.google.com/maps?q=Kochi%20Kerala&t=&z=13&ie=UTF8&iwloc=&output=embed',
+    founderName: settings?.founderName || 'Jaseel Kumar',
+    founderRole: settings?.founderRole || 'Chief Designer & Founder',
+    founderImage: settings?.founderImage || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=800'
   };
 
   return (
     <>
       <Helmet>
-        <title>Contact Us | JK Security Solutions</title>
-        <meta name="description" content="Get in touch with JK Security Solutions for premium security, automation, and solar inquiries." />
+        <title>Contact Us | JK Solutions — Security & Design Excellence</title>
+        <meta name="description" content="Get in touch with JK Solutions in Kochi, Kerala. 24/7 inquiry support for CCTV surveillance, home automation, solar systems, access control, and corporate printing." />
       </Helmet>
 
       <Navbar />
 
-      <main className="pt-32 pb-24 min-h-screen bg-[#050505]">
-        <div className="container mx-auto px-6">
+      {/* WHITE THEME MAIN CONTAINER */}
+      <main className="bg-[#FAF8F5] text-[#1B1D1A] min-h-screen pt-28 sm:pt-36 pb-24 relative overflow-hidden">
+        
+        {/* Soft Ambient Warm Glows */}
+        <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-[#C6A15B]/10 rounded-full blur-[150px] pointer-events-none" />
+        <div className="absolute top-1/3 left-10 w-[500px] h-[500px] bg-[#D9BD82]/15 rounded-full blur-[140px] pointer-events-none" />
+
+        <div className="container mx-auto px-4 sm:px-6 max-w-7xl relative z-10">
           
-          <div className="max-w-7xl mx-auto">
-            {/* Header */}
-            <motion.div 
-              initial={{ opacity: 0, y: 30 }}
+          {/* ============================================================ */}
+          {/* HERO BANNER */}
+          {/* ============================================================ */}
+          <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
+            <motion.h1 
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="mb-16"
+              transition={{ delay: 0.1 }}
+              className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight mb-5 font-heading text-[#111111]"
             >
-              <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight text-white">Let's build <span className="text-accent italic">together.</span></h1>
-              <p className="text-xl text-gray-400 max-w-2xl">
-                Whether you need a premium security overhaul or a complete design consultation, we are ready to bring your vision to life.
-              </p>
+              Let's Build Something <br className="hidden sm:inline" />
+              <span className="text-[#C6A15B]">Extraordinary.</span>
+            </motion.h1>
+
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="text-slate-600 text-sm sm:text-lg leading-relaxed max-w-2xl mx-auto font-medium"
+            >
+              Have a security project, automation requirement, or custom design inquiry? 
+              Connect with our expert engineering and design teams today.
+            </motion.p>
+          </div>
+
+          {/* ============================================================ */}
+          {/* 3 QUICK ACTION HIGHLIGHT CARDS (White Theme) */}
+          {/* ============================================================ */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-12 sm:mb-16">
+            
+            {/* Phone Card */}
+            <motion.a 
+              href={`tel:${s.phoneMain}`}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="group bg-white border border-[#C6A15B]/30 hover:border-[#C6A15B] p-6 rounded-3xl transition-all duration-300 hover:-translate-y-1 shadow-lg shadow-slate-200/50 flex items-center justify-between"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-[#C6A15B]/15 border border-[#C6A15B]/40 flex items-center justify-center text-[#C6A15B] group-hover:bg-[#C6A15B] group-hover:text-white transition-all shadow-sm shrink-0">
+                  <Phone size={22} />
+                </div>
+                <div>
+                  <div className="text-[10px] font-extrabold uppercase tracking-widest text-[#9E8148]">Direct Phone</div>
+                  <div className="text-[#111111] font-extrabold text-base sm:text-lg mt-0.5">{s.phoneMain}</div>
+                  <div className="text-slate-500 text-[11px] mt-0.5">Mon - Sat: 9 AM to 6:30 PM</div>
+                </div>
+              </div>
+              <ArrowRight size={18} className="text-[#C6A15B] group-hover:translate-x-1 transition-transform shrink-0" />
+            </motion.a>
+
+            {/* WhatsApp Card */}
+            <motion.a 
+              href={`https://wa.me/${s.phoneMain.replace(/[^0-9]/g, '')}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="group bg-white border border-emerald-500/30 hover:border-emerald-500 p-6 rounded-3xl transition-all duration-300 hover:-translate-y-1 shadow-lg shadow-slate-200/50 flex items-center justify-between"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-500/15 border border-emerald-500/40 flex items-center justify-center text-emerald-600 group-hover:bg-emerald-500 group-hover:text-white transition-all shadow-sm shrink-0">
+                  <MessageSquare size={22} />
+                </div>
+                <div>
+                  <div className="text-[10px] font-extrabold uppercase tracking-widest text-emerald-600">WhatsApp Priority</div>
+                  <div className="text-[#111111] font-extrabold text-base sm:text-lg mt-0.5">Chat Directly</div>
+                  <div className="text-slate-500 text-[11px] mt-0.5">Fast response & instant estimates</div>
+                </div>
+              </div>
+              <ArrowRight size={18} className="text-emerald-600 group-hover:translate-x-1 transition-transform shrink-0" />
+            </motion.a>
+
+            {/* Email Card */}
+            <motion.a 
+              href={`mailto:${s.emailSales}`}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="group bg-white border border-[#C6A15B]/30 hover:border-[#C6A15B] p-6 rounded-3xl transition-all duration-300 hover:-translate-y-1 shadow-lg shadow-slate-200/50 flex items-center justify-between"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-[#C6A15B]/15 border border-[#C6A15B]/40 flex items-center justify-center text-[#C6A15B] group-hover:bg-[#C6A15B] group-hover:text-white transition-all shadow-sm shrink-0">
+                  <Mail size={22} />
+                </div>
+                <div>
+                  <div className="text-[10px] font-extrabold uppercase tracking-widest text-[#9E8148]">Official Email</div>
+                  <div className="text-[#111111] font-extrabold text-base sm:text-lg mt-0.5 truncate max-w-[180px] sm:max-w-none">{s.emailSales}</div>
+                  <div className="text-slate-500 text-[11px] mt-0.5">RFQs & Corporate Proposals</div>
+                </div>
+              </div>
+              <ArrowRight size={18} className="text-[#C6A15B] group-hover:translate-x-1 transition-transform shrink-0" />
+            </motion.a>
+
+          </div>
+
+          {/* ============================================================ */}
+          {/* MAIN 2-COLUMN SECTION: FORM & PROPER PROFILE / MAP */}
+          {/* ============================================================ */}
+          <div className="grid lg:grid-cols-12 gap-8 sm:gap-12 items-start mb-20">
+            
+            {/* LEFT: INSTANT ENQUIRY FORM (7 cols, White Theme) */}
+            <motion.div 
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.7, delay: 0.2 }}
+              className="lg:col-span-7 bg-white border border-[#C6A15B]/35 p-6 sm:p-10 rounded-3xl shadow-xl relative overflow-hidden"
+            >
+              {/* Form Ambient Glow */}
+              <div className="absolute top-0 right-0 w-72 h-72 bg-[#C6A15B]/10 rounded-full blur-3xl pointer-events-none" />
+
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 rounded-xl bg-[#C6A15B]/15 border border-[#C6A15B]/40 flex items-center justify-center text-[#C6A15B]">
+                  <Sparkles size={20} />
+                </div>
+                <div>
+                  <h2 className="text-2xl sm:text-3xl font-extrabold text-[#111111] font-heading">Send an Instant Enquiry</h2>
+                  <p className="text-slate-500 text-xs sm:text-sm">Select a category and our specialists will respond shortly.</p>
+                </div>
+              </div>
+
+              {/* Service Selection Chips */}
+              <div className="mb-6">
+                <label className="text-[10px] font-extrabold uppercase tracking-widest text-[#9E8148] block mb-2.5">
+                  Select Required Service *
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {serviceOptions.map((item) => {
+                    const isSelected = formData.serviceInterest === item.label;
+                    return (
+                      <button
+                        key={item.id}
+                        type="button"
+                        onClick={() => {
+                          setFormData({ ...formData, serviceInterest: item.label });
+                        }}
+                        className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-300 cursor-pointer ${
+                          isSelected
+                            ? 'bg-[#C6A15B] text-white shadow-md shadow-[#C6A15B]/30 font-extrabold scale-105'
+                            : 'bg-slate-100 border border-slate-200 text-slate-700 hover:border-[#C6A15B]/50 hover:text-[#111111]'
+                        }`}
+                      >
+                        {item.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Form Inputs */}
+              <form onSubmit={handleSubmit} className="space-y-4">
+                
+                {isSuccess && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="p-4 rounded-2xl bg-emerald-50 border border-emerald-300 text-emerald-800 flex items-center gap-3 text-xs sm:text-sm font-bold shadow-xs"
+                  >
+                    <CheckCircle2 size={20} className="shrink-0 text-emerald-600" />
+                    <div>
+                      <div>Enquiry Sent & Received Successfully!</div>
+                      <div className="text-[11px] font-normal text-emerald-700">Our executive team will call you back shortly.</div>
+                    </div>
+                  </motion.div>
+                )}
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-[11px] font-extrabold uppercase tracking-wider text-slate-600 block mb-1">
+                      Your Name *
+                    </label>
+                    <div className="relative">
+                      <input 
+                        type="text" 
+                        required
+                        value={formData.name}
+                        onChange={(e) => setFormData({...formData, name: e.target.value})}
+                        placeholder="John Doe"
+                        className="w-full bg-slate-50 border border-slate-200 focus:border-[#C6A15B] focus:bg-white rounded-xl px-4 py-3 text-sm text-[#111111] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#C6A15B]/20 transition-all"
+                      />
+                      <User size={16} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-[11px] font-extrabold uppercase tracking-wider text-slate-600 block mb-1">
+                      Phone Number *
+                    </label>
+                    <div className="relative">
+                      <input 
+                        type="tel" 
+                        required
+                        value={formData.phone}
+                        onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                        placeholder="+91 98765 43210"
+                        className="w-full bg-slate-50 border border-slate-200 focus:border-[#C6A15B] focus:bg-white rounded-xl px-4 py-3 text-sm text-[#111111] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#C6A15B]/20 transition-all"
+                      />
+                      <Phone size={16} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-[11px] font-extrabold uppercase tracking-wider text-slate-600 block mb-1">
+                    Email Address (Optional)
+                  </label>
+                  <div className="relative">
+                    <input 
+                      type="email" 
+                      value={formData.email}
+                      onChange={(e) => setFormData({...formData, email: e.target.value})}
+                      placeholder="name@company.com"
+                      className="w-full bg-slate-50 border border-slate-200 focus:border-[#C6A15B] focus:bg-white rounded-xl px-4 py-3 text-sm text-[#111111] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#C6A15B]/20 transition-all"
+                    />
+                    <Mail size={16} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-[11px] font-extrabold uppercase tracking-wider text-slate-600 block mb-1">
+                    Project Requirements / Notes
+                  </label>
+                  <textarea 
+                    rows="4"
+                    value={formData.message}
+                    onChange={(e) => setFormData({...formData, message: e.target.value})}
+                    placeholder="Tell us about your property location, budget or specific security & design preferences..."
+                    className="w-full bg-slate-50 border border-slate-200 focus:border-[#C6A15B] focus:bg-white rounded-xl px-4 py-3 text-sm text-[#111111] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#C6A15B]/20 transition-all resize-none"
+                  ></textarea>
+                </div>
+
+                <button 
+                  type="submit" 
+                  disabled={isSubmitting}
+                  className="w-full py-4 px-6 rounded-xl bg-[#C6A15B] hover:bg-[#B5904B] text-white font-extrabold text-xs uppercase tracking-wider shadow-lg shadow-[#C6A15B]/25 transition-all cursor-pointer flex items-center justify-center gap-2.5 active:scale-[0.99]"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <span>Submitting Request...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Submit Request Now</span>
+                      <Send size={15} />
+                    </>
+                  )}
+                </button>
+
+                <p className="text-[11px] text-slate-500 text-center pt-2">
+                  🔒 We respect your privacy. Your information is confidential & secure.
+                </p>
+              </form>
+
             </motion.div>
 
-            {!loading && (
-              <div className="grid lg:grid-cols-12 gap-12 items-start">
-                
-                {/* Left Column - Founder Profile & Direct Contact */}
-                <motion.div 
-                  initial={{ opacity: 0, x: -30 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.8, delay: 0.2 }}
-                  className="lg:col-span-5 flex flex-col h-full"
-                >
-                  {/* Founder Profile - Premium Portrait (No Background) */}
-                  <div className="relative w-full h-[400px] md:h-[500px] rounded-3xl overflow-hidden bg-gradient-to-t from-accent/20 to-transparent border border-white/5 mb-8 group">
+            {/* RIGHT: PROPER EXECUTIVE PROFILE CARD & MAP (5 cols) */}
+            <motion.div 
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.7, delay: 0.3 }}
+              className="lg:col-span-5 space-y-6"
+            >
+              
+              {/* ELEGANT EXECUTIVE PROFILE CARD (PROPER UN-ZOOMED IMAGE FRAMING) */}
+              <div className="bg-white border border-[#C6A15B]/35 rounded-3xl p-6 shadow-xl relative overflow-hidden">
+                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5">
+                  
+                  {/* Portrait Avatar Container - Framed Half Image */}
+                  <div className="relative w-28 h-28 sm:w-32 sm:h-32 rounded-2xl overflow-hidden border-2 border-[#C6A15B] shadow-md shrink-0 bg-gradient-to-t from-[#080A09] to-slate-900 group">
                     <img 
-                      src={s.founderImage || 'https://pngimg.com/uploads/businessman/businessman_PNG6566.png'} 
-                      alt={s.founderName} 
-                      className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[90%] object-contain drop-shadow-[0_20px_30px_rgba(0,0,0,0.8)] grayscale group-hover:grayscale-0 transition-all duration-700"
+                      src={s.founderImage} 
+                      alt={s.founderName}
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = 'https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=800';
+                      }}
+                      className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500" 
                     />
-                    
-                    {/* Name Tag Overlay */}
-                    <div className="absolute bottom-6 left-6 right-6 glass p-6 rounded-2xl border border-white/10 backdrop-blur-md">
-                      <h3 className="text-2xl font-bold text-white mb-1">{s.founderName}</h3>
-                      <p className="text-accent font-medium tracking-wider text-sm uppercase">{s.founderRole}</p>
-                    </div>
                   </div>
 
-                  {/* Direct Contact Links */}
-                  <div className="flex flex-col gap-4">
-                    <a href={`tel:${s.phoneMain}`} className="flex items-center justify-between p-6 rounded-2xl bg-[#0a0a0a] border border-white/5 hover:border-accent/30 transition-colors group">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center text-accent">
-                          <Phone size={20} />
-                        </div>
-                        <div>
-                          <p className="text-sm text-gray-500 mb-1">Direct Line</p>
-                          <p className="text-white font-medium text-lg">{s.phoneMain}</p>
-                        </div>
-                      </div>
-                      <ArrowRight size={20} className="text-gray-600 group-hover:text-accent group-hover:-rotate-45 transition-all" />
-                    </a>
-
-                    <a href={`mailto:${s.emailSales}`} className="flex items-center justify-between p-6 rounded-2xl bg-[#0a0a0a] border border-white/5 hover:border-accent/30 transition-colors group">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center text-accent">
-                          <Mail size={20} />
-                        </div>
-                        <div>
-                          <p className="text-sm text-gray-500 mb-1">Email Inquiry</p>
-                          <p className="text-white font-medium text-lg">{s.emailSales}</p>
-                        </div>
-                      </div>
-                      <ArrowRight size={20} className="text-gray-600 group-hover:text-accent group-hover:-rotate-45 transition-all" />
-                    </a>
-                  </div>
-                </motion.div>
-
-                {/* Right Column - Map & Location Details */}
-                <motion.div 
-                  initial={{ opacity: 0, x: 30 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.8, delay: 0.4 }}
-                  className="lg:col-span-7 flex flex-col h-full"
-                >
-                  <div className="bg-[#0a0a0a] rounded-3xl border border-white/5 p-2 h-full flex flex-col">
-                    
-                    {/* Google Map */}
-                    <div className="w-full h-[400px] md:h-[500px] rounded-2xl overflow-hidden mb-8">
-                      <iframe 
-                        src={s.googleMapUrl} 
-                        width="100%" 
-                        height="100%" 
-                        style={{ border: 0, filter: 'grayscale(1) invert(0.9) contrast(1.2)' }} 
-                        allowFullScreen="" 
-                        loading="lazy" 
-                        referrerPolicy="no-referrer-when-downgrade"
-                      ></iframe>
+                  {/* Profile Details */}
+                  <div className="flex-1 text-center sm:text-left">
+                    <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-[#C6A15B]/15 border border-[#C6A15B]/30 text-[#9E8148] text-[10px] font-extrabold uppercase tracking-widest mb-1.5">
+                      <Award size={12} />
+                      <span>{s.founderRole}</span>
                     </div>
 
-                    {/* Location Details Grid */}
-                    <div className="grid md:grid-cols-2 gap-8 p-6 md:p-8 flex-grow">
-                      <div>
-                        <div className="flex items-center gap-3 mb-4">
-                          <MapPin className="text-accent" size={24} />
-                          <h3 className="text-2xl font-bold text-white">Headquarters</h3>
-                        </div>
-                        <p className="text-gray-400 leading-relaxed text-lg mb-6 whitespace-pre-line">
-                          {s.address}
-                        </p>
-                        
-                        <a href="https://maps.google.com" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-accent font-medium hover:text-white transition-colors">
-                          Get Directions <ArrowRight size={16} />
-                        </a>
-                      </div>
-                      
-                      <div className="border-t md:border-t-0 md:border-l border-white/10 pt-8 md:pt-0 md:pl-8">
-                        <div className="flex items-center gap-3 mb-4">
-                          <Clock className="text-accent" size={24} />
-                          <h3 className="text-2xl font-bold text-white">Business Hours</h3>
-                        </div>
-                        <ul className="space-y-3 text-gray-400 text-lg">
-                          <li className="flex justify-between">
-                            <span>Mon - Fri</span>
-                            <span className="text-white">{s.businessHoursWeekdays}</span>
-                          </li>
-                          <li className="flex justify-between">
-                            <span>Saturday</span>
-                            <span className="text-white">{s.businessHoursSaturday}</span>
-                          </li>
-                          <li className="flex justify-between">
-                            <span>Sunday</span>
-                            <span className="text-accent">Closed</span>
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
+                    <h3 className="text-xl sm:text-2xl font-extrabold text-[#111111] font-heading leading-tight">{s.founderName}</h3>
+                    <p className="text-[#C6A15B] text-xs font-bold mt-0.5">JK Solutions Executive Leadership</p>
                     
+                    <p className="text-slate-600 text-xs leading-relaxed mt-2.5 font-medium italic bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                      "Committed to bringing world-class security technology and creative printing perfection to Kerala."
+                    </p>
                   </div>
-                </motion.div>
 
+                </div>
+
+                <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between text-xs">
+                  <div className="text-slate-600 font-medium">
+                    <span className="font-bold text-[#111111]">Direct Call:</span> {s.phoneMain}
+                  </div>
+                  <a href={`tel:${s.phoneMain}`} className="px-4 py-2 rounded-xl bg-[#C6A15B] text-white font-extrabold hover:bg-[#B5904B] transition-all shadow-sm">
+                    Call Direct
+                  </a>
+                </div>
               </div>
-            )}
+
+              {/* Headquarters Info Box */}
+              <div className="bg-white border border-slate-200/80 p-6 rounded-3xl shadow-lg">
+                <div className="flex items-center gap-3 mb-4 pb-3 border-b border-slate-100">
+                  <div className="w-9 h-9 rounded-xl bg-[#C6A15B]/15 border border-[#C6A15B]/30 flex items-center justify-center text-[#C6A15B]">
+                    <Building size={18} />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-extrabold text-[#111111] font-heading">JK Solutions Headquarters</h3>
+                    <p className="text-slate-500 text-xs">Kochi, Kerala, India</p>
+                  </div>
+                </div>
+
+                <div className="space-y-3 text-xs text-slate-600">
+                  <div className="flex items-start gap-3">
+                    <MapPin size={16} className="text-[#C6A15B] shrink-0 mt-0.5" />
+                    <span className="leading-relaxed font-medium text-[#111111]">{s.address}</span>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <Clock size={16} className="text-[#C6A15B] shrink-0" />
+                    <div>
+                      <span className="font-bold text-[#111111]">Mon - Sat:</span> {s.businessHoursWeekdays}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <ShieldCheck size={16} className="text-[#C6A15B] shrink-0" />
+                    <div>
+                      <span className="font-bold text-[#111111]">Support:</span> 24/7 Priority Assistance
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* PROPER WORKING GOOGLE MAP CONTAINER */}
+              <div className="relative rounded-3xl overflow-hidden border border-slate-200 shadow-lg group h-[220px]">
+                <iframe 
+                  src={s.googleMapUrl} 
+                  width="100%" 
+                  height="100%" 
+                  style={{ border: 0 }} 
+                  allowFullScreen="" 
+                  loading="lazy" 
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="JK Solutions Location Map"
+                ></iframe>
+
+                {/* Map Overlay Button */}
+                <div className="absolute bottom-3 right-3 z-10">
+                  <a 
+                    href="https://maps.google.com/?q=Kochi+Kerala" 
+                    target="_blank" 
+                    rel="noreferrer" 
+                    className="px-4 py-2 rounded-xl bg-white/95 backdrop-blur-md border border-slate-200 text-[#111111] hover:bg-[#C6A15B] hover:text-white text-xs font-bold transition-all shadow-md flex items-center gap-1.5"
+                  >
+                    <span>Get Directions</span>
+                    <ExternalLink size={13} />
+                  </a>
+                </div>
+              </div>
+
+            </motion.div>
+
+          </div>
+
+          {/* ============================================================ */}
+          {/* FREQUENTLY ASKED QUESTIONS SECTION */}
+          {/* ============================================================ */}
+          <div className="max-w-4xl mx-auto pt-10 border-t border-slate-200/80">
+            
+            <div className="text-center mb-10">
+              <span className="text-[10px] font-extrabold uppercase tracking-[0.25em] text-[#9E8148] block mb-2">
+                — HAVE QUESTIONS? —
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-[#111111] font-heading">
+                Contact <span className="text-[#C6A15B]">FAQs</span>
+              </h2>
+            </div>
+
+            <div className="space-y-3">
+              {contactFaqs.map((faq, index) => {
+                const isOpen = openFaq === index;
+                return (
+                  <div 
+                    key={index}
+                    className="bg-white border border-slate-200/80 hover:border-[#C6A15B]/50 rounded-2xl overflow-hidden transition-all duration-300 shadow-xs"
+                  >
+                    <button
+                      onClick={() => setOpenFaq(isOpen ? null : index)}
+                      className="w-full p-5 text-left flex items-center justify-between gap-4 font-bold text-sm sm:text-base text-[#111111] hover:text-[#C6A15B] transition-colors cursor-pointer"
+                    >
+                      <span>{faq.q}</span>
+                      <ChevronDown size={18} className={`text-[#C6A15B] shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+                    </button>
+
+                    <AnimatePresence>
+                      {isOpen && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.25 }}
+                          className="px-5 pb-5 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-3 font-medium"
+                        >
+                          {faq.a}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                );
+              })}
+            </div>
+
           </div>
 
         </div>

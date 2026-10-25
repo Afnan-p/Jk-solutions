@@ -22,15 +22,18 @@ app.use(express.urlencoded({ extended: true }));
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/jk-security';
 
+// Start server immediately so API responds quickly
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
+
+// Connect to MongoDB
 mongoose.connect(MONGO_URI)
   .then(() => {
-    console.log('Connected to MongoDB');
-    app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
-    });
+    console.log(`Connected to MongoDB: ${MONGO_URI.includes('127.0.0.1') ? 'Local DB' : 'MongoDB Atlas Cloud'}`);
   })
   .catch((err) => {
-    console.error('Failed to connect to MongoDB', err);
+    console.error('MongoDB connection error:', err.message);
   });
 
 app.use('/api/auth', authRoutes);
@@ -44,4 +47,9 @@ app.use('/api/stats', statsRoutes);
 
 app.get('/', (req, res) => {
   res.send('JK Security API is running');
+});
+
+// Lightweight health check endpoint (perfect for UptimeRobot / cron ping to keep Render awake 24/7)
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ status: 'ok', uptime: process.uptime(), timestamp: new Date().toISOString() });
 });

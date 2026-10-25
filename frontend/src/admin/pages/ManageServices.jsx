@@ -28,6 +28,7 @@ const ManageServices = () => {
     advantages: '',
     availableProducts: '',
     materialsUsed: '',
+    faqs: [],
     isActive: true
   });
   const [uploading, setUploading] = useState(false);
@@ -61,16 +62,37 @@ const ManageServices = () => {
         advantages: service.advantages ? service.advantages.join(', ') : '',
         availableProducts: service.availableProducts ? service.availableProducts.join(', ') : '',
         materialsUsed: service.materialsUsed ? service.materialsUsed.join(', ') : '',
-        isActive: service.isActive
+        faqs: service.faqs ? service.faqs : [],
+        isActive: service.isActive !== undefined ? service.isActive : true
       });
     } else {
       setEditingService(null);
       setFormData({ 
         title: '', slug: '', description: '', image: '', features: '', 
-        division: divisionName, advantages: '', availableProducts: '', materialsUsed: '', isActive: true 
+        division: divisionName, advantages: '', availableProducts: '', materialsUsed: '', faqs: [], isActive: true 
       });
     }
     setIsModalOpen(true);
+  };
+
+  const handleAddFaq = () => {
+    setFormData({
+      ...formData,
+      faqs: [...formData.faqs, { question: '', answer: '' }]
+    });
+  };
+
+  const handleRemoveFaq = (index) => {
+    setFormData({
+      ...formData,
+      faqs: formData.faqs.filter((_, i) => i !== index)
+    });
+  };
+
+  const handleFaqChange = (index, field, value) => {
+    const updated = [...formData.faqs];
+    updated[index][field] = value;
+    setFormData({ ...formData, faqs: updated });
   };
 
   const handleCloseModal = () => {
@@ -103,10 +125,11 @@ const ManageServices = () => {
     try {
       const payload = {
         ...formData,
-        features: formData.features.split(',').map(f => f.trim()).filter(f => f),
-        advantages: formData.advantages.split(',').map(f => f.trim()).filter(f => f),
-        availableProducts: formData.availableProducts.split(',').map(f => f.trim()).filter(f => f),
-        materialsUsed: formData.materialsUsed.split(',').map(f => f.trim()).filter(f => f)
+        features: typeof formData.features === 'string' ? formData.features.split(',').map(f => f.trim()).filter(f => f) : formData.features,
+        advantages: typeof formData.advantages === 'string' ? formData.advantages.split(',').map(f => f.trim()).filter(f => f) : formData.advantages,
+        availableProducts: typeof formData.availableProducts === 'string' ? formData.availableProducts.split(',').map(f => f.trim()).filter(f => f) : formData.availableProducts,
+        materialsUsed: typeof formData.materialsUsed === 'string' ? formData.materialsUsed.split(',').map(f => f.trim()).filter(f => f) : formData.materialsUsed,
+        faqs: formData.faqs.filter(f => f.question && f.answer)
       };
 
       if (editingService) {
@@ -172,7 +195,15 @@ const ManageServices = () => {
                     <td className="py-4">
                       <div className="flex items-center gap-3">
                         {service.image ? (
-                          <img src={service.image} alt={service.title} className="w-10 h-10 rounded-lg object-cover flex-shrink-0 border border-white/10" />
+                          <img 
+                            src={service.image} 
+                            alt={service.title} 
+                            onError={(e) => {
+                              e.currentTarget.onerror = null;
+                              e.currentTarget.src = 'https://images.unsplash.com/photo-1626785774573-4b799315345d?q=80&w=200';
+                            }}
+                            className="w-10 h-10 rounded-lg object-cover flex-shrink-0 border border-white/10" 
+                          />
                         ) : (
                           <div className="w-10 h-10 rounded-lg bg-white/10 flex-shrink-0" />
                         )}
@@ -314,6 +345,49 @@ const ManageServices = () => {
                       className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white focus:border-accent outline-none text-sm"
                     />
                   </div>
+                </div>
+
+                {/* FAQs Section Builder */}
+                <div className="pt-2">
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="block text-sm font-medium text-gray-400">Frequently Asked Questions (FAQs)</label>
+                    <button 
+                      type="button" 
+                      onClick={handleAddFaq} 
+                      className="text-xs text-[#C6A15B] hover:underline flex items-center gap-1 font-bold"
+                    >
+                      + Add FAQ Item
+                    </button>
+                  </div>
+                  
+                  {formData.faqs.length === 0 ? (
+                    <div className="text-xs text-gray-500 italic p-2 border border-dashed border-white/10 rounded-lg">No FAQs added. Click "+ Add FAQ Item" above to add custom questions and answers.</div>
+                  ) : (
+                    <div className="space-y-3 max-h-48 overflow-y-auto pr-1">
+                      {formData.faqs.map((faq, idx) => (
+                        <div key={idx} className="p-3 bg-white/5 border border-white/10 rounded-lg space-y-2 relative">
+                          <div className="flex justify-between items-center">
+                            <span className="text-xs text-[#C6A15B] font-bold">FAQ #{idx + 1}</span>
+                            <button type="button" onClick={() => handleRemoveFaq(idx)} className="text-red-400 hover:text-red-300 text-xs">Remove</button>
+                          </div>
+                          <input 
+                            type="text" 
+                            placeholder="Question" 
+                            value={faq.question}
+                            onChange={(e) => handleFaqChange(idx, 'question', e.target.value)}
+                            className="w-full bg-white/5 border border-white/10 rounded px-3 py-1.5 text-xs text-white outline-none"
+                          />
+                          <textarea 
+                            placeholder="Answer" 
+                            rows="2"
+                            value={faq.answer}
+                            onChange={(e) => handleFaqChange(idx, 'answer', e.target.value)}
+                            className="w-full bg-white/5 border border-white/10 rounded px-3 py-1.5 text-xs text-white outline-none resize-none"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 <div>

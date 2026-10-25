@@ -1,267 +1,227 @@
-import { motion } from 'framer-motion';
-import { useState } from 'react';
-import { ArrowRight, ShieldCheck, CheckCircle2, ChevronDown, PhoneCall, Palette } from 'lucide-react';
-import { Swiper, SwiperSlide, useSwiper } from 'swiper/react';
-import { Autoplay, EffectFade, Navigation, Pagination } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/effect-fade';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  ShieldCheck, ArrowRight, Video, Cpu, Smartphone, 
+  PenTool, FileText, Trophy, Gift 
+} from 'lucide-react';
 
-import Button from './Button';
-
-const slides = [
+const heroSlides = [
   {
-    id: 1,
-    // Replace with your PNG file in the public/assets/ folder
-    image: '/home automation.png', 
-    label: 'SMART HOME AUTOMATION',
-    heading1: 'SECURE YOUR HOME.',
-    heading2: 'POWER YOUR FUTURE.',
-    description: 'Experience intelligent home automation with advanced security systems, smart locks, and seamless mobile control designed for modern living.',
-    features: ['Smart Lighting', 'Smart Security', 'Smart Climate', 'Remote Control'],
-    primaryAction: 'Book Free Site Visit',
-    secondaryAction: 'Explore Solutions',
-    secondaryIcon: ShieldCheck
+    id: 'security',
+    eyebrow: 'TRUSTED SECURITY PARTNER',
+    titleLine1: '24/7 INTELLIGENT',
+    titleLine2: 'PROTECTION.',
+    description: 'Advanced security, smart automation and reliable solutions for homes, businesses and beyond. Experience uncompromised safety powered by AI.',
+    ctaPrimary: 'Explore Security',
+    ctaPrimaryLink: 'security-solutions',
+    ctaSecondary: 'Watch Video',
+    image: '/hero-light-bg.jpg',
+    mobileImage: '/hero-light-bg.jpg',
+    features: [
+      { label: 'HD Video Quality', desc: '4K Ultra HD', icon: Video },
+      { label: 'AI Motion Detection', desc: 'Smart recognition', icon: Cpu },
+      { label: 'Remote Monitoring', desc: 'Live mobile app', icon: Smartphone },
+      { label: '24/7 Support', desc: 'Active monitoring', icon: ShieldCheck }
+    ]
   },
   {
-    id: 2,
-    // Replace with your PNG file in the public/assets/ folder
-    image: '/cctv.png', 
-    label: 'CCTV SURVEILLANCE',
-    heading1: '24/7 INTELLIGENT',
-    heading2: 'PROTECTION.',
-    description: 'Protect your home and business with AI-powered CCTV surveillance, remote monitoring, and real-time security alerts.',
-    features: ['HD Video Quality', 'AI Motion Detection', 'Night Vision', 'Remote Access'],
-    primaryAction: 'Book Free Consultation',
-    secondaryAction: 'View CCTV Solutions',
-    secondaryIcon: ShieldCheck
-  },
-  {
-    id: 3,
-    // Replace with your PNG file in the public/assets/ folder
-    image: '/gate.png', 
-    label: 'GATE AUTOMATION',
-    heading1: 'OPEN GATES',
-    heading2: 'WITH ONE TOUCH.',
-    description: 'Upgrade your entrance with intelligent gate automation for enhanced security, convenience, and modern living.',
-    features: ['Remote Control', 'Auto Close', 'High Security', 'Durable Motors'],
-    primaryAction: 'Book Site Visit',
-    secondaryAction: 'Explore Automation',
-    secondaryIcon: ShieldCheck
-  },
-  {
-    id: 4,
-    // Replace with your PNG file in the public/assets/ folder
-    image: '/solar.png', 
-    label: 'SOLAR ENERGY',
-    heading1: 'POWER YOUR',
-    heading2: 'TOMORROW.',
-    description: 'Reduce electricity costs with high-performance solar systems designed for homes, businesses, and industrial projects.',
-    features: ['High Efficiency', 'Eco Friendly', 'Long Life', 'Maximum Savings'],
-    primaryAction: 'Get Free Quote',
-    secondaryAction: 'Explore Solar',
-    secondaryIcon: ShieldCheck
-  },
-  {
-    id: 5,
-    image: '/design_printing.png', 
-    label: 'CREATIVE DESIGN & PRINTING',
-    heading1: 'BRING YOUR',
-    heading2: 'BRAND TO LIFE.',
-    description: 'Transform your ideas into impactful branding with premium graphic design, commercial printing, customized gifts, trophies, ID cards, flex banners, corporate stationery, and complete business branding solutions. From concept to delivery — everything under one roof.',
-    features: ['Graphic Design', 'Premium Printing', 'Trophy & Awards', 'Customized Gifts'],
-    primaryAction: 'Get Free Design Consultation',
-    secondaryAction: 'Explore Design Services',
-    secondaryIcon: Palette
+    id: 'design',
+    eyebrow: 'CREATIVE DESIGN & PRINTING',
+    titleLine1: 'ELEVATE YOUR BRAND',
+    titleLine2: 'IDENTITY.',
+    description: 'World-class graphic design, luxury corporate printing, custom trophies, mementos, and premium corporate gifts tailored to impress.',
+    ctaPrimary: 'Explore Design & Print',
+    ctaPrimaryLink: 'design-section',
+    ctaSecondary: 'Get Custom Quote',
+    image: '/hero-design-bg.jpg',
+    mobileImage: '/hero-design-bg.jpg',
+    features: [
+      { label: 'Graphic Design', desc: 'Brand identity', icon: PenTool },
+      { label: 'Corporate Printing', desc: 'Luxury stationery', icon: FileText },
+      { label: 'Trophies & Awards', desc: 'Laser engraved', icon: Trophy },
+      { label: 'Custom Gifts', desc: 'Corporate gifting', icon: Gift }
+    ]
   }
 ];
 
-const stats = [
-  { value: '1500+', label: 'Projects Completed' },
-  { value: '10+', label: 'Years Experience' },
-  { value: '24/7', label: 'Customer Support' },
-  { value: '100%', label: 'Customer Satisfaction' }
-];
-
 const Hero = () => {
-  return (
-    <div className="relative w-full h-screen min-h-[600px] overflow-hidden bg-[#050505]">
-      
-      {/* Main Swiper */}
-      <Swiper
-        modules={[Autoplay, EffectFade, Navigation, Pagination]}
-        effect="fade"
-        fadeEffect={{ crossFade: true }}
-        observer={true}
-        observeParents={true}
-        speed={1000}
-        rewind={true}
-        autoplay={{
-          delay: 3500,
-          disableOnInteraction: false,
-          pauseOnMouseEnter: true,
-        }}
-        navigation={{
-          nextEl: '.hero-next',
-          prevEl: '.hero-prev',
-        }}
-        pagination={{
-          clickable: true,
-          el: '.hero-pagination',
-          bulletClass: 'hero-bullet',
-          bulletActiveClass: 'hero-bullet-active',
-        }}
-        className="w-full h-full absolute inset-0"
-      >
-        {slides.map((slide) => (
-          <SwiperSlide key={slide.id} className="relative w-full h-full">
-            {/* Background Image with Overlay */}
-            <div className="absolute inset-0 w-full h-full">
-              <img 
-                src={slide.image} 
-                alt={slide.label}
-                loading="lazy"
-                className="w-full h-full object-cover scale-105 swiper-zoom-target"
-                style={{ transformOrigin: 'center center' }}
-              />
-              {/* 50% Dark Overlay for Text Readability */}
-              <div className="absolute inset-0 bg-black/50 mix-blend-multiply" />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-[#050505]/40" />
-            </div>
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
-            {/* Slide Content */}
-            <div className="relative z-10 w-full h-full flex flex-col justify-center pt-32 pb-16 md:pt-40 md:pb-24">
-              <div className="container mx-auto px-6 lg:px-12">
-                <div className="max-w-[700px]">
+  // Auto-play interval
+  useEffect(() => {
+    if (!isAutoPlaying) return;
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+    }, 6000);
+    return () => clearInterval(interval);
+  }, [isAutoPlaying]);
+
+  const slide = heroSlides[currentSlide];
+
+  const scrollToTarget = (targetId) => {
+    const el = document.getElementById(targetId) || document.getElementById('services');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      window.location.href = slide.id === 'design' ? '/services/design' : '/services/security';
+    }
+  };
+
+  return (
+    <section 
+      onMouseEnter={() => setIsAutoPlaying(false)}
+      onMouseLeave={() => setIsAutoPlaying(true)}
+      className="relative w-full min-h-[100dvh] lg:h-screen lg:min-h-[700px] bg-white lg:bg-gradient-to-br lg:from-white lg:via-[#F8F9FA] lg:to-[#F1F3F5] overflow-hidden flex flex-col justify-end lg:justify-center text-slate-900"
+    >
+      
+      {/* Background Hero Image with Responsive Desktop & Mobile Framing */}
+      <AnimatePresence mode="wait">
+        <motion.div 
+          key={`hero-bg-${slide.id}`}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.7 }}
+          className="absolute top-0 right-0 w-full lg:w-[58%] xl:w-[60%] h-[275px] sm:h-[340px] lg:h-full z-0 overflow-hidden pointer-events-none"
+        >
+          <img 
+            src={slide.image} 
+            alt={`JK Solutions ${slide.eyebrow}`} 
+            className={`w-full h-full object-cover ${
+              slide.id === 'security' 
+                ? 'object-[68%_center] lg:object-[65%_center]' 
+                : 'object-[82%_center] lg:object-center'
+            }`}
+          />
+
+          {/* Mobile Gradients: Clean top vignette for navbar, smooth bottom fade into solid white */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-transparent to-transparent lg:hidden" />
+          <div className="absolute bottom-0 inset-x-0 h-28 bg-gradient-to-t from-white via-white/85 to-transparent lg:hidden" />
+
+          {/* Desktop Gradient: Left-Edge Fade to blend seamlessly into left white area */}
+          <div className="hidden lg:block absolute top-0 left-0 w-2/5 sm:w-1/3 h-full bg-gradient-to-r from-white via-white/80 to-transparent pointer-events-none" />
+        </motion.div>
+      </AnimatePresence>
+
+      {/* Background Tech Grid & Ambient Accents for Desktop (≥ lg) */}
+      <div className="absolute inset-0 pointer-events-none z-0 hidden lg:block">
+        <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-gradient-to-br from-[#C6A15B]/10 via-slate-100/50 to-transparent rounded-full blur-[140px]" />
+        <div 
+          className="absolute inset-y-0 left-0 w-1/2 opacity-[0.03]" 
+          style={{ 
+            backgroundImage: `radial-gradient(#111111 1px, transparent 1px)`, 
+            backgroundSize: '32px 32px' 
+          }} 
+        />
+      </div>
+
+      {/* Main Slide Content Container */}
+      <div className="container mx-auto px-5 sm:px-6 max-w-7xl relative z-10 flex-1 flex flex-col justify-end lg:justify-center pt-[215px] sm:pt-[275px] lg:pt-0 pb-20 sm:pb-24 lg:pb-0">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          
+          {/* Left Column: Headline, Paragraph, Buttons & Feature Cards */}
+          <div className="lg:col-span-7 xl:col-span-6 flex flex-col items-start text-left max-w-2xl">
+            
+            <AnimatePresence mode="wait">
+              <motion.div 
+                key={`text-content-${slide.id}`}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                transition={{ duration: 0.5 }}
+                className="w-full"
+              >
+                {/* Text Block */}
+                <div className="relative z-10 mb-2 sm:mb-0">
                   
-                  {/* Label */}
-                  <div 
-                    className="slide-element inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/20 bg-white/5 backdrop-blur-md mb-6"
-                  >
-                    <div className="w-2 h-2 rounded-full bg-accent animate-pulse" />
-                    <span className="text-white text-xs font-bold tracking-widest uppercase">
-                      {slide.label}
-                    </span>
+                  {/* Eyebrow Badge & Slide Indicator */}
+                  <div className="flex items-center justify-between w-full max-w-md mb-2 sm:mb-2.5">
+                    <div className="flex items-center gap-2">
+                      <span className="w-5 h-[2px] bg-[#C6A15B]" />
+                      <span className="text-[10px] sm:text-xs font-extrabold text-[#C6A15B] uppercase tracking-[0.2em] font-heading drop-shadow-xs flex items-center gap-1.5">
+                        {slide.eyebrow}
+                      </span>
+                    </div>
+
+                    {/* Elegant Slide Indicators (2 dots) */}
+                    <div className="flex items-center gap-1.5 pointer-events-auto">
+                      {heroSlides.map((s, idx) => (
+                        <button
+                          key={s.id}
+                          onClick={() => setCurrentSlide(idx)}
+                          className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                            currentSlide === idx 
+                              ? 'w-6 bg-[#C6A15B]' 
+                              : 'w-2 bg-slate-300 hover:bg-slate-400'
+                          }`}
+                          aria-label={`Switch to ${s.eyebrow}`}
+                        />
+                      ))}
+                    </div>
                   </div>
 
-                  {/* Heading */}
-                  <h1 className="slide-element text-4xl md:text-5xl lg:text-[4rem] font-extrabold text-white leading-[1.05] tracking-tighter mb-4">
-                    {slide.heading1} <br />
-                    <span className="text-accent">{slide.heading2}</span>
+                  {/* Editorial Main Headline */}
+                  <h1 className="text-2xl sm:text-4xl lg:text-6xl font-black text-[#111111] tracking-tight leading-[1.1] mb-2 sm:mb-5 font-heading">
+                    {slide.titleLine1} <br />
+                    <span className="text-[#C6A15B]">{slide.titleLine2}</span>
                   </h1>
 
-                  {/* Description */}
-                  <p className="slide-element text-base md:text-lg text-gray-300 leading-relaxed mb-8 max-w-xl">
+                  {/* Supporting Copy */}
+                  <p className="text-slate-700 text-[11px] sm:text-base lg:text-lg leading-relaxed font-normal max-w-xl mb-3.5 sm:mb-6">
                     {slide.description}
                   </p>
 
-                  {/* Features Grid */}
-                  <div className="slide-element grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 sm:gap-y-5 mb-10 max-w-lg">
-                    {slide.features.map((feature, idx) => (
-                      <div key={idx} className="flex items-center gap-2 text-gray-300 font-medium">
-                        <CheckCircle2 size={18} className="text-accent" />
-                        <span className="text-sm md:text-base">{feature}</span>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Division Buttons */}
-                  <div className="slide-element flex flex-col sm:flex-row items-center gap-4 sm:gap-6 mt-4">
-                    <Button onClick={() => window.location.href = '/services/security'} className="w-full sm:w-auto font-semibold text-base py-3 sm:py-4 px-6 sm:px-8 shadow-[0_0_20px_rgba(255,107,0,0.3)]">
-                      <ShieldCheck size={20} className="mr-2 inline" /> Security Solutions
-                    </Button>
-                    <Button onClick={() => {
-                        document.getElementById('design-section')?.scrollIntoView({ behavior: 'smooth' });
-                      }} 
-                      variant="secondary" 
-                      className="w-full sm:w-auto font-semibold text-base py-3 sm:py-4 px-6 sm:px-8 bg-white/5 backdrop-blur-md border border-white/10 hover:bg-white/10"
-                    >
-                      <Palette size={20} className="mr-2 inline text-purple-400" /> Design & Printing
-                    </Button>
-                  </div>
-                  
                 </div>
-              </div>
-            </div>
-          </SwiperSlide>
-        ))}
 
-        <HeroControls />
-      </Swiper>
+                {/* Action Buttons */}
+                <div className="flex flex-row items-center gap-2.5 sm:gap-4 mb-3.5 sm:mb-6 w-full">
+                  <button 
+                    onClick={() => scrollToTarget(slide.ctaPrimaryLink)} 
+                    className="py-2.5 sm:py-3.5 px-5 sm:px-7 font-extrabold text-xs uppercase tracking-wider bg-[#C6A15B] hover:bg-[#B5904B] text-white rounded-full shadow-lg shadow-[#C6A15B]/25 hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
+                  >
+                    {slide.ctaPrimary} <ArrowRight size={14} />
+                  </button>
+                </div>
 
+                {/* Feature Cards: 2x2 Grid on Mobile, 4-in-a-row on Desktop (Zero Cut-Off) */}
+                <div className="w-full max-w-2xl mb-1 sm:mb-6">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 w-full">
+                    {slide.features.map((feat, idx) => {
+                      const IconComponent = feat.icon;
+                      return (
+                        <div 
+                          key={idx} 
+                          className="w-full bg-white border border-slate-200/90 shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:shadow-md hover:border-[#C6A15B]/60 transition-all p-2 sm:p-2.5 px-2.5 sm:px-3 rounded-xl flex items-center gap-2 group"
+                        >
+                          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[#C6A15B]/10 border border-[#C6A15B]/25 flex items-center justify-center text-[#C6A15B] group-hover:bg-[#C6A15B] group-hover:text-white transition-all shrink-0">
+                            <IconComponent size={13} />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="text-slate-900 font-bold text-[10.5px] sm:text-[11px] tracking-tight truncate leading-snug">
+                              {feat.label}
+                            </div>
+                            <div className="text-slate-500 text-[9px] sm:text-[10px] font-medium leading-none mt-0.5 truncate">
+                              {feat.desc}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
 
+              </motion.div>
+            </AnimatePresence>
 
-      {/* CSS for custom Swiper active states and animations */}
-      <style dangerouslySetInnerHTML={{__html: `
-        .swiper-slide-active .slide-element {
-          animation: slideUpFade 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-          opacity: 0;
-          transform: translateY(30px);
-        }
-        .swiper-slide-active .slide-element:nth-child(1) { animation-delay: 0.2s; }
-        .swiper-slide-active .slide-element:nth-child(2) { animation-delay: 0.4s; }
-        .swiper-slide-active .slide-element:nth-child(3) { animation-delay: 0.6s; }
-        .swiper-slide-active .slide-element:nth-child(4) { animation-delay: 0.8s; }
-        .swiper-slide-active .slide-element:nth-child(5) { animation-delay: 1.0s; }
-        
-        .swiper-slide-active img.swiper-zoom-target {
-          animation: slowZoom 10s ease-out forwards;
-        }
+          </div>
 
-        @keyframes slideUpFade {
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes slowZoom {
-          from { transform: scale(1); }
-          to { transform: scale(1.1); }
-        }
-
-        .hero-bullet {
-          width: 8px;
-          height: 8px;
-          background: rgba(255, 255, 255, 0.3);
-          border-radius: 50%;
-          display: inline-block;
-          cursor: pointer;
-          transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-          margin: 0 4px !important;
-        }
-        .hero-bullet:hover {
-          background: rgba(255, 255, 255, 0.6);
-        }
-        .hero-bullet-active {
-          width: 32px;
-          border-radius: 4px;
-          background: #FDB515;
-          box-shadow: 0 0 10px rgba(253, 181, 21, 0.4);
-        }
-      `}} />
-    </div>
-  );
-};
-
-const HeroControls = () => {
-  const swiper = useSwiper();
-  return (
-    <div className="absolute z-20 bottom-8 md:bottom-12 left-1/2 -translate-x-1/2 pointer-events-none">
-      <div className="bg-[#101010]/80 backdrop-blur-xl border border-white/10 rounded-full px-5 py-2 md:px-6 md:py-3 flex items-center gap-4 md:gap-6 shadow-2xl pointer-events-auto">
-        <button 
-          onClick={() => swiper.slidePrev()}
-          className="text-gray-400 hover:text-white transition-colors cursor-pointer"
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-        </button>
-        <div className="hero-pagination flex items-center gap-2" />
-        <button 
-          onClick={() => swiper.slideNext()}
-          className="text-gray-400 hover:text-white transition-colors cursor-pointer"
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
-        </button>
+          <div className="hidden lg:block lg:col-span-5 xl:col-span-6 min-h-[360px]" />
+        </div>
       </div>
-    </div>
+    </section>
   );
 };
 
 export default Hero;
+

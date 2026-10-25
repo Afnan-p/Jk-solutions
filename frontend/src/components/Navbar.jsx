@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Phone, ChevronDown, ShieldCheck, Palette } from 'lucide-react';
+import { Menu, X, Phone, ChevronDown, ShieldCheck, Palette, ArrowRight } from 'lucide-react';
 import Button from './Button';
 import api from '../api';
 
@@ -13,6 +13,9 @@ const Navbar = () => {
   const [showMegaMenuProjects, setShowMegaMenuProjects] = useState(false);
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
   const [mobileProjectsOpen, setMobileProjectsOpen] = useState(false);
+  const location = useLocation();
+
+  const [servicesList, setServicesList] = useState([]);
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -23,304 +26,359 @@ const Navbar = () => {
         console.error('Failed to load settings in Navbar:', err);
       }
     };
+    
+    const fetchServices = async () => {
+      try {
+        const { data } = await api.get('/services');
+        if (Array.isArray(data) && data.length > 0) {
+          setServicesList(data);
+        }
+      } catch (err) {
+        console.log('Using default fallback services in Navbar');
+      }
+    };
+
     fetchSettings();
+    fetchServices();
 
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      const scrolled = window.scrollY > 20;
+      setIsScrolled((prev) => (prev !== scrolled ? scrolled : prev));
     };
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const getWhatsAppLink = () => {
-    const rawNumber = settings?.phone1 || '+919876543210';
-    // Remove all non-numeric characters except +
-    const cleanNumber = rawNumber.replace(/[^\d+]/g, '');
-    return `https://wa.me/${cleanNumber.startsWith('+') ? cleanNumber.substring(1) : cleanNumber}?text=Hello,%20I%20would%20like%20to%20book%20a%20site%20visit`;
+  const scrollToContact = () => {
+    if (location.pathname !== '/') {
+      window.location.href = '/contact';
+      return;
+    }
+    const el = document.getElementById('contact-section') || document.getElementById('consultation');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      window.location.href = '/contact';
+    }
   };
 
-  const securityServices = [
-    { name: 'CCTV', path: '/services/security/cctv' },
+  const defaultSecurityServices = [
+    { name: 'CCTV Surveillance', path: '/services/security/cctv' },
     { name: 'Home Automation', path: '/services/security/home-automation' },
     { name: 'Gate Automation', path: '/services/security/gate-automation' },
-    { name: 'Solar', path: '/services/security/solar' },
-    { name: 'Smart Locks', path: '/services/security/smart-locks' },
+    { name: 'Smart Locks & Biometrics', path: '/services/security/smart-locks' },
+    { name: 'Access Control Systems', path: '/services/security/access-control' },
+    { name: 'Solar Systems', path: '/services/security/solar' },
+    { name: 'Networking & Wi-Fi', path: '/services/security/networking-wifi' }
   ];
 
-  const designServices = [
-    { name: 'ID Cards', path: '/services/design/id-cards' },
-    { name: 'Trophy & Mementos', path: '/services/design/trophy-mementos' },
+  const defaultDesignServices = [
+    { name: 'Graphic Design', path: '/services/design/graphic-design' },
+    { name: 'Corporate Printing', path: '/services/design/corporate-printing' },
+    { name: 'Trophies & Mementos', path: '/services/design/trophy-mementos' },
     { name: 'Customized Gifts', path: '/services/design/customized-gifts' },
     { name: 'Flex Printing', path: '/services/design/flex-printing' },
-    { name: 'Corporate Printing', path: '/services/design/corporate-printing' },
-    { name: 'Graphic Design', path: '/services/design/graphic-design' },
+    { name: 'ID Cards', path: '/services/design/id-cards' }
   ];
+
+  const securityServices = servicesList.length > 0
+    ? servicesList
+        .filter(s => s.division === 'Security Solutions' && s.isActive !== false)
+        .map(s => ({
+          name: s.title,
+          path: `/services/security/${s.slug}`
+        }))
+    : defaultSecurityServices;
+
+  const designServices = servicesList.length > 0
+    ? servicesList
+        .filter(s => s.division === 'Design & Printing' && s.isActive !== false)
+        .map(s => ({
+          name: s.title,
+          path: `/services/design/${s.slug}`
+        }))
+    : defaultDesignServices;
 
   return (
     <motion.nav
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
-        isScrolled ? 'bg-[#050505]/80 backdrop-blur-xl border-b border-white/10 py-5' : 'bg-transparent py-8'
+      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+      className={`fixed top-0 left-0 w-full z-50 transition-all duration-400 pt-[env(safe-area-inset-top)] ${
+        isScrolled 
+          ? 'lg:bg-[#080A09]/92 lg:backdrop-blur-xl lg:border-b lg:border-[#C6A15B]/30 lg:shadow-2xl lg:py-3.5' 
+          : 'lg:bg-gradient-to-b lg:from-[#080A09]/90 lg:via-[#080A09]/40 lg:to-transparent lg:py-5'
       }`}
     >
-      <div className="container mx-auto px-6 relative flex justify-between items-center">
-        {/* Logo Setup */}
-        <Link to="/" className="flex items-center gap-3 z-10 hover:opacity-90 transition-opacity">
-          <img src="/jk-logo-official-new.webp" alt="JK Solutions Logo" className="h-10 w-10 md:h-12 md:w-12 object-contain rounded-xl" />
-          <div className="flex flex-col justify-center">
-            <span className="text-xl md:text-2xl font-extrabold text-white tracking-wide uppercase leading-none mb-1">
-              JK Solutions
-            </span>
-            <span className="text-[9px] md:text-[10px] font-bold text-accent tracking-[0.25em] uppercase leading-none">
-              Technology Excellence
-            </span>
-          </div>
-        </Link>
-
-        {/* Desktop Links */}
-        <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-12 z-10">
-          <Link to="/" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">Home</Link>
+      <div className="px-3.5 sm:px-6 pt-2.5 sm:pt-3 lg:p-0 lg:container lg:mx-auto lg:max-w-7xl">
+        <div className="mobile-glass-nav px-4 py-2.5 sm:px-6 sm:py-3 flex justify-between items-center lg:px-0 lg:py-0">
           
-          {/* Services Mega Menu Trigger */}
-          <div 
-            className="relative"
-            onMouseEnter={() => setShowMegaMenu(true)}
-            onMouseLeave={() => setShowMegaMenu(false)}
-          >
-            <div className="flex items-center gap-1 cursor-pointer text-sm font-medium text-gray-300 hover:text-white transition-colors py-4">
-              <span>Services</span>
-              <ChevronDown size={14} className={`transition-transform duration-300 ${showMegaMenu ? 'rotate-180' : ''}`} />
+          {/* Left: Logo */}
+          <Link to="/" className="flex items-center gap-2.5 sm:gap-3 z-10 group">
+            <img 
+              src="/jk-logo-official-new.webp" 
+              alt="JK Solutions Logo" 
+              className="h-8 w-8 sm:h-9 sm:w-9 object-contain rounded-lg border border-[#C6A15B]/40 group-hover:border-[#C6A15B] transition-colors shadow-sm" 
+            />
+            <div className="flex flex-col justify-center">
+              <span className="text-base sm:text-lg md:text-xl font-extrabold text-[#FAF9F5] tracking-tight uppercase leading-none font-heading group-hover:text-[#C6A15B] transition-colors">
+                JK SOLUTIONS
+              </span>
+              <span className="text-[8px] sm:text-[9px] font-bold text-[#C6A15B] tracking-[0.2em] uppercase leading-none mt-0.5 sm:mt-1">
+                Technology & Security
+              </span>
+            </div>
+          </Link>
+
+          {/* Center: Desktop Nav */}
+          <div className="hidden lg:flex items-center gap-8 z-10">
+            <Link to="/" className="text-xs font-extrabold uppercase tracking-wider text-[#FAF9F5] hover:text-[#C6A15B] transition-colors relative py-1 group">
+              <span>Home</span>
+              <span className="absolute bottom-0 left-0 w-0 h-[2px] bg-[#C6A15B] group-hover:w-full transition-all duration-300" />
+            </Link>
+            
+            {/* Services Mega Menu */}
+            <div 
+              className="relative"
+              onMouseEnter={() => setShowMegaMenu(true)}
+              onMouseLeave={() => setShowMegaMenu(false)}
+            >
+              <div className="flex items-center gap-1 cursor-pointer text-xs font-extrabold uppercase tracking-wider text-[#FAF9F5] hover:text-[#C6A15B] transition-colors py-3 group">
+                <span>Services</span>
+                <ChevronDown size={13} className={`transition-transform duration-300 ${showMegaMenu ? 'rotate-180 text-[#C6A15B]' : ''}`} />
+              </div>
+
+              <AnimatePresence>
+                {showMegaMenu && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                    className="absolute top-full left-1/2 -translate-x-1/2 w-[540px] glass-panel-dark border border-[#C6A15B]/30 shadow-2xl rounded-2xl p-6"
+                  >
+                    <div className="grid grid-cols-2 gap-6">
+                      <div>
+                        <div className="flex items-center gap-2 text-[#C6A15B] font-bold text-xs uppercase tracking-wider mb-3 pb-2 border-b border-[#C6A15B]/20">
+                          <ShieldCheck size={16} />
+                          Security Solutions
+                        </div>
+                        <ul className="space-y-2">
+                          {securityServices.map((s) => (
+                            <li key={s.name}>
+                              <Link 
+                                to={s.path} 
+                                className="text-xs text-[#EDE8DC]/90 hover:text-[#C6A15B] transition-colors block font-medium"
+                                onClick={() => setShowMegaMenu(false)}
+                              >
+                                {s.name}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      <div>
+                        <div className="flex items-center gap-2 text-[#C6A15B] font-bold text-xs uppercase tracking-wider mb-3 pb-2 border-b border-[#C6A15B]/20">
+                          <Palette size={16} />
+                          Design & Printing
+                        </div>
+                        <ul className="space-y-2">
+                          {designServices.map((s) => (
+                            <li key={s.name}>
+                              <Link 
+                                to={s.path} 
+                                className="text-xs text-[#EDE8DC]/90 hover:text-[#C6A15B] transition-colors block font-medium"
+                                onClick={() => setShowMegaMenu(false)}
+                              >
+                                {s.name}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
-            {/* Mega Menu Dropdown */}
-            <AnimatePresence>
-              {showMegaMenu && (
-                <motion.div 
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 15 }}
-                  transition={{ duration: 0.2 }}
-                  className="absolute top-full left-1/2 -translate-x-1/2 w-[600px] bg-[#0a0a0a]/95 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl overflow-hidden pt-2"
-                >
-                  <div className="grid grid-cols-2 p-6 gap-8">
-                    {/* Security Column */}
-                    <div>
-                      <div className="flex items-center gap-2 text-accent font-bold mb-4 pb-2 border-b border-white/5">
-                        <ShieldCheck size={18} />
-                        Security Solutions
-                      </div>
-                      <ul className="space-y-3">
-                        {securityServices.map((service) => (
-                          <li key={service.name}>
-                            <Link 
-                              to={service.path} 
-                              className="text-sm text-gray-400 hover:text-white transition-colors block"
-                              onClick={() => setShowMegaMenu(false)}
-                            >
-                              {service.name}
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
-                      <Link to="/services/security" className="inline-block mt-4 text-xs font-bold text-accent hover:text-white transition-colors uppercase tracking-wider">
-                        View All Security →
-                      </Link>
-                    </div>
+            {/* Our Works Dropdown */}
+            <div 
+              className="relative"
+              onMouseEnter={() => setShowMegaMenuProjects(true)}
+              onMouseLeave={() => setShowMegaMenuProjects(false)}
+            >
+              <div className="flex items-center gap-1 cursor-pointer text-xs font-extrabold uppercase tracking-wider text-[#FAF9F5] hover:text-[#C6A15B] transition-colors py-3 group">
+                <span>Our Works</span>
+                <ChevronDown size={13} className={`transition-transform duration-300 ${showMegaMenuProjects ? 'rotate-180 text-[#C6A15B]' : ''}`} />
+              </div>
 
-                    {/* Design Column */}
-                    <div>
-                      <div className="flex items-center gap-2 text-purple-400 font-bold mb-4 pb-2 border-b border-white/5">
-                        <Palette size={18} />
-                        Design & Printing
-                      </div>
-                      <ul className="space-y-3">
-                        {designServices.map((service) => (
-                          <li key={service.name}>
-                            <Link 
-                              to={service.path} 
-                              className="text-sm text-gray-400 hover:text-white transition-colors block"
-                              onClick={() => setShowMegaMenu(false)}
-                            >
-                              {service.name}
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
-                      <Link to="/services/design" className="inline-block mt-4 text-xs font-bold text-purple-400 hover:text-white transition-colors uppercase tracking-wider">
-                        View All Design →
-                      </Link>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-
-          {/* Projects Dropdown Menu */}
-          <div 
-            className="relative"
-            onMouseEnter={() => setShowMegaMenuProjects(true)}
-            onMouseLeave={() => setShowMegaMenuProjects(false)}
-          >
-            <div className="flex items-center gap-1 cursor-pointer text-sm font-medium text-gray-300 hover:text-white transition-colors py-4">
-              <span>Our Works</span>
-              <ChevronDown size={14} className={`transition-transform duration-300 ${showMegaMenuProjects ? 'rotate-180' : ''}`} />
+              <AnimatePresence>
+                {showMegaMenuProjects && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                    className="absolute top-full left-1/2 -translate-x-1/2 w-60 glass-panel-dark border border-[#C6A15B]/30 shadow-2xl rounded-2xl p-3 flex flex-col gap-1"
+                  >
+                    <Link 
+                      to="/projects/security" 
+                      className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-[#EDE8DC]/90 hover:text-[#C6A15B] hover:bg-white/5 transition-all" 
+                      onClick={() => setShowMegaMenuProjects(false)}
+                    >
+                      <ShieldCheck size={15} className="text-[#C6A15B]" />
+                      Security Portfolio
+                    </Link>
+                    
+                    <Link 
+                      to="/projects/design" 
+                      className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-[#EDE8DC]/90 hover:text-[#C6A15B] hover:bg-white/5 transition-all" 
+                      onClick={() => setShowMegaMenuProjects(false)}
+                    >
+                      <Palette size={15} className="text-[#C6A15B]" />
+                      Design Portfolio
+                    </Link>
+                    
+                    <div className="my-1 border-t border-[#C6A15B]/20 mx-2"></div>
+                    
+                    <Link 
+                      to="/projects" 
+                      className="flex items-center justify-center gap-1.5 px-3 py-1.5 text-[10px] font-bold text-[#C6A15B] hover:text-white transition-colors tracking-wider uppercase" 
+                      onClick={() => setShowMegaMenuProjects(false)}
+                    >
+                      View All Projects →
+                    </Link>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
-            <AnimatePresence>
-              {showMegaMenuProjects && (
-                <motion.div 
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 15 }}
-                  transition={{ duration: 0.2 }}
-                  className="absolute top-full left-1/2 -translate-x-1/2 w-64 bg-[#0a0a0a]/95 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl overflow-hidden p-3 flex flex-col gap-1"
-                >
-                  <Link 
-                    to="/projects/security" 
-                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-accent/10 group transition-all" 
-                    onClick={() => setShowMegaMenuProjects(false)}
-                  >
-                    <div className="bg-white/5 p-2 rounded-lg group-hover:bg-accent/20 transition-colors">
-                      <ShieldCheck size={16} className="text-accent" />
-                    </div>
-                    Security Portfolio
-                  </Link>
-                  
-                  <Link 
-                    to="/projects/design" 
-                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-purple-500/10 group transition-all" 
-                    onClick={() => setShowMegaMenuProjects(false)}
-                  >
-                    <div className="bg-white/5 p-2 rounded-lg group-hover:bg-purple-500/20 transition-colors">
-                      <Palette size={16} className="text-purple-400" />
-                    </div>
-                    Design Portfolio
-                  </Link>
-                  
-                  <div className="my-1 border-t border-white/5 mx-2"></div>
-                  
-                  <Link 
-                    to="/projects" 
-                    className="flex items-center justify-center gap-2 px-4 py-2 text-xs font-bold text-gray-400 hover:text-white transition-colors tracking-wider uppercase mt-1" 
-                    onClick={() => setShowMegaMenuProjects(false)}
-                  >
-                    View All Projects →
-                  </Link>
-                </motion.div>
-              )}
-            </AnimatePresence>
+            <Link to="/about" className="text-xs font-extrabold uppercase tracking-wider text-[#FAF9F5] hover:text-[#C6A15B] transition-colors relative py-1 group">
+              <span>About</span>
+              <span className="absolute bottom-0 left-0 w-0 h-[2px] bg-[#C6A15B] group-hover:w-full transition-all duration-300" />
+            </Link>
+            
+            <Link to="/contact" className="text-xs font-extrabold uppercase tracking-wider text-[#FAF9F5] hover:text-[#C6A15B] transition-colors relative py-1 group">
+              <span>Contact</span>
+              <span className="absolute bottom-0 left-0 w-0 h-[2px] bg-[#C6A15B] group-hover:w-full transition-all duration-300" />
+            </Link>
           </div>
-          <Link to="/about" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">About</Link>
-          <Link to="/contact" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">Contact</Link>
-        </div>
 
-        {/* Action Buttons */}
-        <div className="hidden md:flex items-center gap-6 z-10">
-          <a href={`tel:${settings?.phone1 || '+919876543210'}`} className="flex items-center gap-2 text-sm font-medium hover:text-accent transition-colors text-gray-200">
-            <Phone size={16} className="text-accent" />
-            <span>Call Now</span>
-          </a>
-          <Button 
-            variant="primary" 
-            className="text-sm"
-            onClick={() => window.open(getWhatsAppLink(), '_blank')}
+          {/* Right Action */}
+          <div className="hidden lg:flex items-center gap-5 z-10">
+            <a 
+              href={`tel:${settings?.phone1 || '+919876543210'}`} 
+              className="flex items-center gap-2 text-xs font-extrabold text-[#FAF9F5] hover:text-[#C6A15B] transition-colors group"
+            >
+              <div className="w-8 h-8 rounded-full bg-[#C6A15B]/15 border border-[#C6A15B]/40 flex items-center justify-center text-[#C6A15B] group-hover:bg-[#C6A15B] group-hover:text-[#101312] transition-all shadow-xs">
+                <Phone size={13} />
+              </div>
+              <span>+91 9876 543210</span>
+            </a>
+
+            <button 
+              className="text-xs font-extrabold uppercase tracking-wider py-2.5 px-5 rounded-xl bg-[#C6A15B] text-[#101312] hover:bg-[#D9BD82] hover:-translate-y-0.5 shadow-md shadow-[#C6A15B]/25 transition-all flex items-center gap-2 cursor-pointer"
+              onClick={scrollToContact}
+            >
+              Get a Quote <ArrowRight size={14} />
+            </button>
+          </div>
+
+          {/* Mobile Toggle */}
+          <button
+            className="lg:hidden text-[#FAF9F5] z-10 p-1.5 sm:p-2 cursor-pointer focus:outline-none rounded-full hover:bg-white/10 transition-colors"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle Menu"
           >
-            Book Site Visit
-          </Button>
+            {mobileMenuOpen ? <X size={22} className="text-[#FAF9F5]" /> : <Menu size={22} className="text-[#FAF9F5]" />}
+          </button>
         </div>
 
-        {/* Mobile Menu Toggle */}
-        <button
-          className="md:hidden text-white z-10"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-        >
-          {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+        {/* Mobile Drawer */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -8, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -8, scale: 0.98 }}
+              transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+              className="lg:hidden mobile-glass-drawer mt-2.5 rounded-3xl overflow-hidden shadow-2xl"
+            >
+              <div className="px-6 py-5 flex flex-col gap-4">
+                <Link to="/" onClick={() => setMobileMenuOpen(false)} className="text-sm font-bold uppercase text-[#FAF9F5] hover:text-[#C6A15B]">Home</Link>
+                
+                <div>
+                  <button 
+                    onClick={() => setMobileServicesOpen(!mobileServicesOpen)}
+                    className="flex items-center justify-between w-full text-sm font-bold uppercase text-[#FAF9F5] hover:text-[#C6A15B]"
+                  >
+                    Services <ChevronDown size={16} className={mobileServicesOpen ? 'rotate-180 text-[#C6A15B]' : ''} />
+                  </button>
+                  <AnimatePresence>
+                    {mobileServicesOpen && (
+                      <motion.div 
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="pl-4 mt-2 space-y-2"
+                      >
+                        <div className="text-[#C6A15B] text-xs font-bold uppercase tracking-wider">Security</div>
+                        {securityServices.map(s => (
+                          <Link key={s.name} to={s.path} onClick={() => setMobileMenuOpen(false)} className="block text-[#EDE8DC]/80 text-xs py-1 hover:text-[#C6A15B]">{s.name}</Link>
+                        ))}
+                        <div className="text-[#C6A15B] text-xs font-bold uppercase tracking-wider mt-3">Design & Printing</div>
+                        {designServices.map(s => (
+                          <Link key={s.name} to={s.path} onClick={() => setMobileMenuOpen(false)} className="block text-[#EDE8DC]/80 text-xs py-1 hover:text-[#C6A15B]">{s.name}</Link>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                <div>
+                  <button 
+                    onClick={() => setMobileProjectsOpen(!mobileProjectsOpen)}
+                    className="flex items-center justify-between w-full text-sm font-bold uppercase text-[#FAF9F5] hover:text-[#C6A15B]"
+                  >
+                    Our Works <ChevronDown size={16} className={mobileProjectsOpen ? 'rotate-180 text-[#C6A15B]' : ''} />
+                  </button>
+                  <AnimatePresence>
+                    {mobileProjectsOpen && (
+                      <motion.div 
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="pl-4 mt-2 space-y-2"
+                      >
+                        <Link to="/projects/security" onClick={() => setMobileMenuOpen(false)} className="block text-[#EDE8DC]/80 text-xs py-1 font-medium hover:text-[#C6A15B]">Security Portfolio</Link>
+                        <Link to="/projects/design" onClick={() => setMobileMenuOpen(false)} className="block text-[#EDE8DC]/80 text-xs py-1 font-medium hover:text-[#C6A15B]">Design Portfolio</Link>
+                        <Link to="/projects" onClick={() => setMobileMenuOpen(false)} className="block text-[#C6A15B] text-xs py-1 font-bold uppercase">View All Projects →</Link>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                <Link to="/about" onClick={() => setMobileMenuOpen(false)} className="text-sm font-bold uppercase text-[#FAF9F5] hover:text-[#C6A15B]">About</Link>
+                <Link to="/contact" onClick={() => setMobileMenuOpen(false)} className="text-sm font-bold uppercase text-[#FAF9F5] hover:text-[#C6A15B]">Contact</Link>
+              </div>
+
+              <div className="px-6 pb-6 pt-2">
+                <button 
+                  className="w-full justify-center text-xs font-bold uppercase py-3 bg-[#C6A15B] text-[#101312] hover:bg-[#D9BD82] rounded-xl shadow-md flex items-center justify-center gap-2"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    scrollToContact();
+                  }}
+                >
+                  Get a Quote <ArrowRight size={14} />
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
-
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {mobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-[#101010] border-t border-white/10 overflow-hidden"
-          >
-            <div className="px-6 py-4 flex flex-col gap-4">
-              <Link to="/" onClick={() => setMobileMenuOpen(false)} className="text-lg font-medium text-white hover:text-accent transition-colors">Home</Link>
-              
-              {/* Mobile Services Accordion */}
-              <div>
-                <button 
-                  onClick={() => setMobileServicesOpen(!mobileServicesOpen)}
-                  className="flex items-center justify-between w-full text-lg font-medium text-white hover:text-accent transition-colors"
-                >
-                  Services <ChevronDown size={20} className={`transition-transform duration-300 ${mobileServicesOpen ? 'rotate-180' : ''}`} />
-                </button>
-                <AnimatePresence>
-                  {mobileServicesOpen && (
-                    <motion.div 
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="overflow-hidden pl-4 mt-2 space-y-4"
-                    >
-                      <div className="text-accent text-sm font-bold uppercase tracking-wider mb-2 flex items-center gap-2"><ShieldCheck size={14}/> Security</div>
-                      {securityServices.map(s => (
-                        <Link key={s.name} to={s.path} onClick={() => setMobileMenuOpen(false)} className="block text-gray-400 hover:text-white text-sm py-1">{s.name}</Link>
-                      ))}
-                      
-                      <div className="text-purple-400 text-sm font-bold uppercase tracking-wider mb-2 mt-4 flex items-center gap-2"><Palette size={14}/> Design & Printing</div>
-                      {designServices.map(s => (
-                        <Link key={s.name} to={s.path} onClick={() => setMobileMenuOpen(false)} className="block text-gray-400 hover:text-white text-sm py-1">{s.name}</Link>
-                      ))}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-
-              {/* Mobile Projects Accordion */}
-              <div>
-                <button 
-                  onClick={() => setMobileProjectsOpen(!mobileProjectsOpen)}
-                  className="flex items-center justify-between w-full text-lg font-medium text-white hover:text-accent transition-colors"
-                >
-                  Our Works <ChevronDown size={20} className={`transition-transform duration-300 ${mobileProjectsOpen ? 'rotate-180' : ''}`} />
-                </button>
-                <AnimatePresence>
-                  {mobileProjectsOpen && (
-                    <motion.div 
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="overflow-hidden pl-4 mt-2 space-y-2"
-                    >
-                      <Link to="/projects/security" onClick={() => setMobileMenuOpen(false)} className="block text-gray-400 hover:text-accent text-sm py-1">Security Portfolio</Link>
-                      <Link to="/projects/design" onClick={() => setMobileMenuOpen(false)} className="block text-gray-400 hover:text-purple-400 text-sm py-1">Design Portfolio</Link>
-                      <Link to="/projects" onClick={() => setMobileMenuOpen(false)} className="block text-gray-400 hover:text-white text-sm py-1">View All Projects</Link>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-              <Link to="/about" onClick={() => setMobileMenuOpen(false)} className="text-lg font-medium text-white hover:text-accent transition-colors">About</Link>
-              <Link to="/contact" onClick={() => setMobileMenuOpen(false)} className="text-lg font-medium text-white hover:text-accent transition-colors">Contact</Link>
-            </div>
-            <div className="px-6 pb-6">
-              <Button 
-                variant="primary" 
-                className="w-full justify-center"
-                onClick={() => window.open(getWhatsAppLink(), '_blank')}
-              >
-                Book Site Visit
-              </Button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </motion.nav>
   );
 };

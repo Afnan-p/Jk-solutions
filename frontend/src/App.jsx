@@ -13,6 +13,7 @@ const ServiceDetail = lazy(() => import('./pages/ServiceDetail'))
 const ProjectDetail = lazy(() => import('./pages/ProjectDetail'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 const FloatingButtons = lazy(() => import('./components/FloatingButtons'))
+const MobileFloatingBar = lazy(() => import('./components/MobileFloatingBar'))
 import ScrollToTop from './components/ScrollToTop'
 
 // Admin lazy load
@@ -34,28 +35,31 @@ const LoadingScreen = () => (
 function App() {
   useEffect(() => {
     const lenis = new Lenis({
-      duration: 1.2,
+      duration: 1.0,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      direction: 'vertical',
-      gestureDirection: 'vertical',
-      smooth: true,
-      mouseMultiplier: 1,
-      smoothTouch: false,
-      touchMultiplier: 2,
-      infinite: false,
-    })
+      orientation: 'vertical',
+      gestureOrientation: 'vertical',
+      smoothWheel: true,
+      wheelMultiplier: 1,
+      touchMultiplier: 1.5,
+    });
+
+    let animationFrameId;
 
     function raf(time) {
-      lenis.raf(time)
-      requestAnimationFrame(raf)
+      lenis.raf(time);
+      animationFrameId = requestAnimationFrame(raf);
     }
 
-    requestAnimationFrame(raf)
+    animationFrameId = requestAnimationFrame(raf);
 
     return () => {
-      lenis.destroy()
-    }
-  }, [])
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+      }
+      lenis.destroy();
+    };
+  }, []);
 
   return (
     <HelmetProvider>
@@ -94,6 +98,7 @@ function App() {
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
           <FloatingButtons />
+          <MobileFloatingBar />
         </Suspense>
       </BrowserRouter>
     </HelmetProvider>

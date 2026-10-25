@@ -21,4 +21,20 @@ router.post('/', protect, upload.single('image'), (req, res) => {
   }
 });
 
+// Upload multiple files
+router.post('/multiple', protect, upload.array('images', 12), (req, res) => {
+  try {
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ message: 'No files uploaded' });
+    }
+    const urls = req.files.map(f => f.path);
+    res.status(200).json({ 
+      message: 'Images uploaded successfully',
+      urls 
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 export default router;

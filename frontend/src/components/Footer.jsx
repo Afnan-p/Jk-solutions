@@ -1,75 +1,129 @@
 import { Link } from 'react-router-dom';
+import { ArrowUp, ArrowUpRight, MapPin, Phone, Mail, Clock } from 'lucide-react';
 
 const Footer = () => {
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
-    <footer className="bg-[#050505] pt-20 pb-10 border-t border-white/10">
-      <div className="container mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+    <footer className="bg-[#080A09] text-[#FAF9F5] pt-16 pb-8 border-t border-[#C6A15B]/20 relative overflow-hidden">
+      {/* Ambient Glass Glow */}
+      <div className="absolute top-0 right-10 w-96 h-96 bg-[#C6A15B]/5 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="container mx-auto px-6 max-w-7xl relative z-10">
+        
+        {/* Top 5-Column Footer Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-16">
           
-          <div className="space-y-6">
-            <Link to="/" className="text-3xl font-bold text-white tracking-wider">
-              JK<span className="text-accent">.</span>
+          {/* Col 1: Logo & Description */}
+          <div className="lg:col-span-1 space-y-4">
+            <Link to="/" className="flex items-center gap-2.5">
+              <img src="/jk-logo-official-new.webp" alt="JK Solutions" className="h-8 w-8 object-contain rounded-md border border-[#C6A15B]/30" />
+              <span className="text-base font-extrabold text-[#FAF9F5] tracking-tight uppercase leading-none font-[#Plus Jakarta Sans]">
+                JK SOLUTIONS
+              </span>
             </Link>
-            <p className="text-gray-400 text-sm leading-relaxed max-w-xs">
-              Kerala's premier provider of intelligent security, luxury automation, and sustainable solar solutions for modern living spaces.
+
+            <p className="text-xs text-[#EDE8DC]/70 leading-relaxed">
+              Your trusted partner for security, automation, solar and printing solutions.
             </p>
-            <div className="flex gap-4">
-              <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-accent hover:text-black transition-colors">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-accent hover:text-black transition-colors">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path></svg>
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-accent hover:text-black transition-colors">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-accent hover:text-black transition-colors">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
-              </a>
+
+            <div className="flex gap-2">
+              {['FB', 'IG', 'LN', 'TW'].map((item, i) => (
+                <a 
+                  key={i} 
+                  href="#" 
+                  className="w-8 h-8 rounded-full glass-pill flex items-center justify-center text-[10px] font-bold text-[#EDE8DC] hover:bg-[#C6A15B] hover:text-[#101312] hover:border-[#C6A15B] transition-all"
+                >
+                  {item}
+                </a>
+              ))}
             </div>
           </div>
 
+          {/* Col 2: Quick Links */}
           <div>
-            <h4 className="text-white font-bold mb-6 uppercase tracking-wider text-sm">Quick Links</h4>
-            <ul className="space-y-3 text-sm text-gray-400">
-              <li><Link to="/about" className="hover:text-accent transition-colors">About Us</Link></li>
-              <li><Link to="/projects" className="hover:text-accent transition-colors">Our Portfolio</Link></li>
-              <li><Link to="/contact" className="hover:text-accent transition-colors">Careers</Link></li>
-              <li><Link to="/contact" className="hover:text-accent transition-colors">Contact Us</Link></li>
-              <li><Link to="/contact" className="hover:text-accent transition-colors">FAQs</Link></li>
+            <h4 className="text-xs font-extrabold text-[#FAF9F5] uppercase tracking-wider mb-4 border-l-2 border-[#C6A15B] pl-2.5">
+              Quick Links
+            </h4>
+            <ul className="space-y-2 text-xs text-[#EDE8DC]/70">
+              <li><Link to="/" className="hover:text-[#C6A15B] transition-colors">Home</Link></li>
+              <li><Link to="/about" className="hover:text-[#C6A15B] transition-colors">About Us</Link></li>
+              <li><Link to="/projects" className="hover:text-[#C6A15B] transition-colors">Our Works</Link></li>
+              <li><a href="#how-it-works" className="hover:text-[#C6A15B] transition-colors">Blog</a></li>
+              <li><Link to="/contact" className="hover:text-[#C6A15B] transition-colors">Contact</Link></li>
             </ul>
           </div>
 
+          {/* Col 3: Our Services */}
           <div>
-            <h4 className="text-white font-bold mb-6 uppercase tracking-wider text-sm">Services</h4>
-            <ul className="space-y-3 text-sm text-gray-400">
-              <li><Link to="/services" className="hover:text-accent transition-colors">CCTV Surveillance</Link></li>
-              <li><Link to="/services" className="hover:text-accent transition-colors">Home Automation</Link></li>
-              <li><Link to="/services" className="hover:text-accent transition-colors">Solar Systems</Link></li>
-              <li><Link to="/services" className="hover:text-accent transition-colors">Gate Automation</Link></li>
-              <li><Link to="/services" className="hover:text-accent transition-colors">Networking</Link></li>
+            <h4 className="text-xs font-extrabold text-[#FAF9F5] uppercase tracking-wider mb-4 border-l-2 border-[#C6A15B] pl-2.5">
+              Our Services
+            </h4>
+            <ul className="space-y-2 text-xs text-[#EDE8DC]/70">
+              <li><Link to="/services/security/cctv" className="hover:text-[#C6A15B] transition-colors">CCTV Surveillance</Link></li>
+              <li><Link to="/services/security/home-automation" className="hover:text-[#C6A15B] transition-colors">Home Automation</Link></li>
+              <li><Link to="/services/security/gate-automation" className="hover:text-[#C6A15B] transition-colors">Gate Automation</Link></li>
+              <li><Link to="/services/security/smart-locks" className="hover:text-[#C6A15B] transition-colors">Access Control</Link></li>
+              <li><Link to="/services/security/solar" className="hover:text-[#C6A15B] transition-colors">Solar Systems</Link></li>
+              <li><Link to="/services/security" className="hover:text-[#C6A15B] transition-colors">Networking</Link></li>
+              <li><Link to="/services/design" className="hover:text-[#C6A15B] transition-colors">Design & Printing</Link></li>
             </ul>
           </div>
 
+          {/* Col 4: Contact Info */}
           <div>
-            <h4 className="text-white font-bold mb-6 uppercase tracking-wider text-sm">Working Hours</h4>
-            <ul className="space-y-3 text-sm text-gray-400">
-              <li className="flex justify-between"><span>Monday - Friday:</span> <span>9:00 AM - 6:00 PM</span></li>
-              <li className="flex justify-between"><span>Saturday:</span> <span>10:00 AM - 4:00 PM</span></li>
-              <li className="flex justify-between text-accent font-medium"><span>Sunday:</span> <span>Closed</span></li>
-              <li className="flex justify-between mt-4 font-medium text-white"><span>Emergency:</span> <span>24/7 Available</span></li>
+            <h4 className="text-xs font-extrabold text-[#FAF9F5] uppercase tracking-wider mb-4 border-l-2 border-[#C6A15B] pl-2.5">
+              Contact Info
+            </h4>
+            <ul className="space-y-2 text-xs text-[#EDE8DC]/70">
+              <li className="flex items-center gap-2">
+                <MapPin size={13} className="text-[#C6A15B] flex-shrink-0" />
+                <span>Kochi, Kerala, India</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <Phone size={13} className="text-[#C6A15B] flex-shrink-0" />
+                <span>+91 9876 543210</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <Mail size={13} className="text-[#C6A15B] flex-shrink-0" />
+                <span>info@jksolutions.in</span>
+              </li>
+              <li className="flex items-center gap-2 pt-1">
+                <Clock size={13} className="text-[#C6A15B] flex-shrink-0" />
+                <span>Mon - Sat: 9:00 AM - 6:30 PM</span>
+              </li>
             </ul>
+          </div>
+
+          {/* Col 5: Right Side Tagline & Scroll To Top */}
+          <div className="flex flex-col items-start lg:items-end justify-between">
+            <div className="text-left lg:text-right">
+              <h3 className="text-base font-extrabold text-[#FAF9F5] leading-tight mb-1">
+                Building <br />
+                Safer Spaces <br />
+                Together
+              </h3>
+            </div>
+
+            <button 
+              onClick={scrollToTop}
+              className="w-10 h-10 rounded-full glass-panel-dark border border-[#C6A15B]/40 text-[#C6A15B] flex items-center justify-center hover:bg-[#C6A15B] hover:text-[#101312] transition-all duration-300 cursor-pointer mt-4 lg:mt-0 shadow-lg"
+              aria-label="Scroll to top"
+            >
+              <ArrowUp size={16} />
+            </button>
           </div>
 
         </div>
 
-        <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500">
-          <p>&copy; {new Date().getFullYear()} JK Security Solutions. All rights reserved.</p>
-          <div className="flex gap-6">
-            <Link to="/contact" className="hover:text-white transition-colors">Privacy Policy</Link>
-            <Link to="/contact" className="hover:text-white transition-colors">Terms of Service</Link>
-          </div>
+        {/* Bottom Bar */}
+        <div className="pt-6 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-3 text-[11px] text-[#77766F]">
+          <p>© 2025 JK Solutions. All rights reserved.</p>
+          <p className="text-[#9E8148] font-semibold">Designed for a safer tomorrow.</p>
         </div>
+
       </div>
     </footer>
   );
