@@ -100,12 +100,29 @@ const ProjectsSection = () => {
       }
     }
   };
-
   return (
-    <section className="py-24 bg-white text-[#1B1D1A] relative overflow-hidden" id="projects">
+    <section className="py-24 bg-gradient-to-b from-[#FAF8F5] via-[#F4EFE6]/60 to-[#FAF8F5] text-[#1B1D1A] relative overflow-hidden" id="projects">
       
-      {/* Background Glow */}
-      <div className="absolute bottom-1/3 left-1/4 w-[450px] h-[450px] bg-[#C6A15B]/15 rounded-full blur-[140px] pointer-events-none" />
+      {/* Background Soft Gold Ambient Glows */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[650px] bg-[#C6A15B]/10 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-10 right-10 w-[350px] h-[350px] bg-[#C6A15B]/8 rounded-full blur-[100px] pointer-events-none" />
+
+      {/* Architectural 'JK' Watermark Graphics Blended into Cream Background */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden">
+        <img 
+          src="/jk-logo-official-new.webp" 
+          alt="" 
+          aria-hidden="true" 
+          className="w-[420px] md:w-[600px] max-w-none opacity-[0.035] filter grayscale contrast-125 mix-blend-multiply transform scale-110 -rotate-6"
+        />
+        <span className="absolute font-extrabold text-[220px] md:text-[340px] tracking-tighter text-[#C6A15B]/[0.03] select-none font-heading leading-none">
+          JK
+        </span>
+      </div>
+
+      {/* Subtle Top & Bottom Architectural Edge Lines */}
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#C6A15B]/25 to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#C6A15B]/25 to-transparent" />
 
       <div className="container mx-auto px-6 max-w-7xl relative z-10">
         
@@ -150,7 +167,7 @@ const ProjectsSection = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: index * 0.08, ease: cardEasing }}
               onClick={() => navigate(`/projects/${project.slug}`)}
-              className="snap-start w-[220px] xs:w-[240px] sm:w-full min-w-[210px] xs:min-w-[230px] sm:min-w-0 max-w-[265px] mx-auto h-[250px] sm:h-[290px] group relative rounded-2xl overflow-hidden cursor-pointer glass-panel-dark border border-[#C6A15B]/30 hover:border-[#C6A15B] shadow-xl transition-all duration-500 hover:-translate-y-1.5 flex-shrink-0 sm:flex-shrink-1"
+              className="snap-start w-[240px] xs:w-[260px] sm:w-full min-w-[230px] sm:min-w-0 max-w-[290px] mx-auto h-[330px] sm:h-[380px] lg:h-[400px] group relative rounded-lg overflow-hidden cursor-pointer border border-[#C6A15B]/50 hover:border-[#C6A15B] shadow-sm hover:shadow-[0_14px_30px_rgba(198,161,91,0.22)] transition-all duration-500 hover:-translate-y-1.5 flex-shrink-0 sm:flex-shrink-1"
             >
               {/* Image */}
               <img 
@@ -169,32 +186,32 @@ const ProjectsSection = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-[#080A09]/95 via-[#080A09]/50 to-transparent z-10" />
               
               {/* Content Container */}
-              <div className="absolute bottom-0 left-0 w-full p-3.5 sm:p-4.5 z-20 flex flex-col justify-end text-white group-hover:-translate-y-0.5 transition-transform duration-300">
+              <div className="absolute bottom-0 left-0 w-full p-4 sm:p-5 z-20 flex flex-col justify-end text-white group-hover:-translate-y-0.5 transition-transform duration-300">
                 
                 {/* Glass Category Badge */}
-                <div className="mb-1.5 sm:mb-2">
-                  <span className="glass-pill text-[#C6A15B] text-[8px] sm:text-[9px] font-extrabold uppercase tracking-widest py-0.5 px-2 sm:py-1 sm:px-2.5 rounded-full shadow-sm">
+                <div className="mb-2 sm:mb-2.5">
+                  <span className="glass-pill text-[#C6A15B] text-[8px] sm:text-[9px] font-extrabold uppercase tracking-widest py-1 px-2.5 rounded-md border border-[#C6A15B]/30 shadow-sm">
                     {project.category || 'Security'}
                   </span>
                 </div>
 
-                <h3 className="text-xs sm:text-base font-bold text-[#FAF9F5] mb-1 leading-snug group-hover:text-[#C6A15B] transition-colors font-heading line-clamp-1">
+                <h3 className="text-sm sm:text-base font-bold text-[#FAF9F5] mb-1.5 leading-snug group-hover:text-[#C6A15B] transition-colors font-heading line-clamp-2">
                   {project.title}
                 </h3>
                 
-                <p className="text-[10px] sm:text-[11px] text-[#EDE8DC]/80 line-clamp-1 mb-2 sm:mb-2.5 font-normal">
+                <p className="text-[10px] sm:text-[11px] text-[#EDE8DC]/80 line-clamp-1 mb-2.5 sm:mb-3 font-normal">
                   {project.description}
                 </p>
 
                 {/* Location & Glass Arrow */}
-                <div className="flex items-center justify-between text-xs text-[#77766F] pt-2 border-t border-white/15">
-                  <span className="flex items-center gap-1 text-[10px] sm:text-[11px] text-[#EDE8DC]/80">
+                <div className="flex items-center justify-between text-xs text-[#77766F] pt-2.5 border-t border-white/15">
+                  <span className="flex items-center gap-1.5 text-[10px] sm:text-[11px] text-[#EDE8DC]/80">
                     <MapPin size={11} className="text-[#C6A15B]" />
                     {project.location || 'Kerala'}
                   </span>
 
-                  <div className="w-6 h-6 sm:w-6.5 sm:h-6.5 rounded-full bg-[#C6A15B]/20 border border-[#C6A15B]/40 text-[#C6A15B] flex items-center justify-center group-hover:bg-[#C6A15B] group-hover:text-[#101312] transition-colors shadow-md">
-                    <ArrowRight size={11} className="group-hover:translate-x-0.5 transition-transform duration-300" />
+                  <div className="w-7 h-7 rounded-lg bg-[#C6A15B]/20 border border-[#C6A15B]/40 text-[#C6A15B] flex items-center justify-center group-hover:bg-[#C6A15B] group-hover:text-[#101312] transition-colors shadow-md">
+                    <ArrowRight size={12} className="group-hover:translate-x-0.5 transition-transform duration-300" />
                   </div>
                 </div>
 
