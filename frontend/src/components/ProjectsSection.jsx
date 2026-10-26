@@ -101,28 +101,10 @@ const ProjectsSection = () => {
     }
   };
   return (
-    <section className="py-24 bg-gradient-to-b from-[#FAF8F5] via-[#F4EFE6]/60 to-[#FAF8F5] text-[#1B1D1A] relative overflow-hidden" id="projects">
+    <section className="py-24 bg-white text-[#1B1D1A] relative overflow-hidden" id="projects">
       
-      {/* Background Soft Gold Ambient Glows */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[650px] bg-[#C6A15B]/10 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute top-10 right-10 w-[350px] h-[350px] bg-[#C6A15B]/8 rounded-full blur-[100px] pointer-events-none" />
-
-      {/* Architectural 'JK' Watermark Graphics Blended into Cream Background */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden">
-        <img 
-          src="/jk-logo-official-new.webp" 
-          alt="" 
-          aria-hidden="true" 
-          className="w-[420px] md:w-[600px] max-w-none opacity-[0.035] filter grayscale contrast-125 mix-blend-multiply transform scale-110 -rotate-6"
-        />
-        <span className="absolute font-extrabold text-[220px] md:text-[340px] tracking-tighter text-[#C6A15B]/[0.03] select-none font-heading leading-none">
-          JK
-        </span>
-      </div>
-
-      {/* Subtle Top & Bottom Architectural Edge Lines */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#C6A15B]/25 to-transparent" />
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#C6A15B]/25 to-transparent" />
+      {/* Background Glow */}
+      <div className="absolute bottom-1/3 left-1/4 w-[450px] h-[450px] bg-[#C6A15B]/15 rounded-full blur-[140px] pointer-events-none" />
 
       <div className="container mx-auto px-6 max-w-7xl relative z-10">
         
