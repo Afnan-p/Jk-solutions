@@ -156,7 +156,7 @@ const DesignSection = () => {
                 <div
                   key={card.id || i}
                   onClick={() => setSelectedServiceModal(card)}
-                  className="group relative block w-full h-[105px] rounded-2xl overflow-hidden border border-slate-200/90 shadow-md active:scale-[0.98] transition-all cursor-pointer"
+                  className="group relative block w-full h-[105px] rounded-lg overflow-hidden border border-[#C6A15B]/40 hover:border-[#C6A15B] shadow-md active:scale-[0.98] transition-all cursor-pointer"
                 >
                   {/* Background Image */}
                   <img 
@@ -175,7 +175,7 @@ const DesignSection = () => {
                   {/* Card Inner Content */}
                   <div className="relative z-10 h-full px-4 py-3 flex items-center justify-between text-white">
                     <div className="flex items-center gap-3.5 pr-2">
-                      <div className="w-10 h-10 rounded-xl bg-white/95 backdrop-blur-md border border-white/80 flex items-center justify-center text-[#C6A15B] shadow-sm shrink-0">
+                      <div className="w-10 h-10 rounded-lg bg-white/95 backdrop-blur-md border border-[#C6A15B]/40 flex items-center justify-center text-[#C6A15B] shadow-sm shrink-0">
                         <IconComp size={18} />
                       </div>
                       <div>
@@ -261,7 +261,7 @@ const DesignSection = () => {
                   >
                     <Link 
                       to={card.link}
-                      className="group relative block h-[210px] sm:h-[220px] rounded-[22px] overflow-hidden border border-white/80 shadow-[0_12px_32px_rgba(0,0,0,0.06)] hover:shadow-[0_22px_50px_rgba(0,0,0,0.14)] hover:-translate-y-1 transition-all duration-500 cursor-pointer"
+                      className="group relative block h-[210px] sm:h-[220px] rounded-lg overflow-hidden border border-[#C6A15B]/50 hover:border-[#C6A15B] shadow-sm hover:shadow-[0_14px_30px_rgba(198,161,91,0.22)] hover:-translate-y-1 transition-all duration-400 cursor-pointer"
                     >
                       <img 
                         src={card.image} 
@@ -276,7 +276,7 @@ const DesignSection = () => {
                       <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-slate-950/10 group-hover:from-slate-950/95 transition-opacity" />
 
                       <div className="relative z-10 p-5 flex flex-col justify-between h-full text-white">
-                        <div className="w-8 h-8 rounded-full bg-white/90 backdrop-blur-md border border-white/80 flex items-center justify-center text-[#C6A15B] shadow-sm shrink-0">
+                        <div className="w-8 h-8 rounded-lg bg-white/95 backdrop-blur-md border border-[#C6A15B]/40 flex items-center justify-center text-[#C6A15B] shadow-sm shrink-0">
                           <IconComp size={15} />
                         </div>
 
