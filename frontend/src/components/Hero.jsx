@@ -130,7 +130,7 @@ const Hero = () => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -15 }}
                 transition={{ duration: 0.5 }}
-                className="w-full"
+                className={`w-full ${slide.id === 'design' ? 'pt-3 sm:pt-6 lg:pt-11' : ''}`}
               >
                 {/* Text Block */}
                 <div className="relative z-10 mb-2 sm:mb-0">
