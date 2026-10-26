@@ -1,5 +1,4 @@
 import { Helmet } from 'react-helmet-async';
-import ScrollProgress from '../components/ScrollProgress';
 import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
 import TrustLogos from '../components/TrustLogos';
@@ -22,9 +21,6 @@ const HomePage = () => {
         <title>JK Solutions — Premium Intelligent Security & Automation</title>
         <meta name="description" content="Kerala's leading security technology company providing 24/7 CCTV surveillance, smart home automation, gate automation, solar systems, access control, and corporate printing." />
       </Helmet>
-      
-      {/* 2px Champagne Gold Scroll Progress Bar */}
-      <ScrollProgress />
 
       <Navbar />
       
