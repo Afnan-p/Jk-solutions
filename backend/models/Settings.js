@@ -12,6 +12,27 @@ const settingsSchema = new mongoose.Schema({
   founderName: { type: String, default: 'Jaseel Kumar' },
   founderRole: { type: String, default: 'Chief Designer & Founder' },
   founderImage: { type: String, default: 'https://pngimg.com/uploads/businessman/businessman_PNG6566.png' },
+
+  // Homepage Statistics & Tagline Quote
+  statsQuote: { 
+    type: String, 
+    default: '“Empowering homes and businesses with intelligent security solutions and world-class creative design & printing services.”' 
+  },
+  stat1Value: { type: String, default: '1500' },
+  stat1Suffix: { type: String, default: '+' },
+  stat1Label: { type: String, default: 'PROJECTS COMPLETED' },
+
+  stat2Value: { type: String, default: '10' },
+  stat2Suffix: { type: String, default: '+' },
+  stat2Label: { type: String, default: 'YEARS OF EXPERIENCE' },
+
+  stat3Value: { type: String, default: '98' },
+  stat3Suffix: { type: String, default: '%' },
+  stat3Label: { type: String, default: 'CLIENT SATISFACTION' },
+
+  stat4Value: { type: String, default: '24' },
+  stat4Suffix: { type: String, default: '/7' },
+  stat4Label: { type: String, default: 'SUPPORT' },
 }, { timestamps: true });
 
 export default mongoose.model('Settings', settingsSchema);

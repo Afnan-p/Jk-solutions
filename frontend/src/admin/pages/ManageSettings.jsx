@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Save, Upload, ShieldCheck, Mail, Lock, Key, AlertCircle, CheckCircle, Eye, EyeOff, Trash2, Award } from 'lucide-react';
+import { Save, Upload, ShieldCheck, Mail, Lock, Key, AlertCircle, CheckCircle, Eye, EyeOff, Trash2, Award, Shield, ThumbsUp, Headset, BarChart2 } from 'lucide-react';
 import api from '../../api';
 import { useToast } from '../components/Toast';
 
@@ -18,6 +18,19 @@ const ManageSettings = () => {
     founderName: '',
     founderRole: '',
     founderImage: '',
+    statsQuote: '“Empowering homes and businesses with intelligent security solutions and world-class creative design & printing services.”',
+    stat1Value: '1500',
+    stat1Suffix: '+',
+    stat1Label: 'PROJECTS COMPLETED',
+    stat2Value: '10',
+    stat2Suffix: '+',
+    stat2Label: 'YEARS OF EXPERIENCE',
+    stat3Value: '98',
+    stat3Suffix: '%',
+    stat3Label: 'CLIENT SATISFACTION',
+    stat4Value: '24',
+    stat4Suffix: '/7',
+    stat4Label: 'SUPPORT',
   });
 
   const [securityData, setSecurityData] = useState({
@@ -76,6 +89,19 @@ const ManageSettings = () => {
           founderName: data.founderName || '',
           founderRole: data.founderRole || '',
           founderImage: data.founderImage || '',
+          statsQuote: data.statsQuote || '“Empowering homes and businesses with intelligent security solutions and world-class creative design & printing services.”',
+          stat1Value: data.stat1Value !== undefined ? String(data.stat1Value) : '1500',
+          stat1Suffix: data.stat1Suffix !== undefined ? data.stat1Suffix : '+',
+          stat1Label: data.stat1Label || 'PROJECTS COMPLETED',
+          stat2Value: data.stat2Value !== undefined ? String(data.stat2Value) : '10',
+          stat2Suffix: data.stat2Suffix !== undefined ? data.stat2Suffix : '+',
+          stat2Label: data.stat2Label || 'YEARS OF EXPERIENCE',
+          stat3Value: data.stat3Value !== undefined ? String(data.stat3Value) : '98',
+          stat3Suffix: data.stat3Suffix !== undefined ? data.stat3Suffix : '%',
+          stat3Label: data.stat3Label || 'CLIENT SATISFACTION',
+          stat4Value: data.stat4Value !== undefined ? String(data.stat4Value) : '24',
+          stat4Suffix: data.stat4Suffix !== undefined ? data.stat4Suffix : '/7',
+          stat4Label: data.stat4Label || 'SUPPORT',
         });
       }
     } catch (error) {
@@ -475,6 +501,220 @@ const ManageSettings = () => {
                 </div>
               </div>
 
+            </div>
+          </div>
+        </div>
+
+        {/* Homepage Statistics & Tagline Quote Section */}
+        <div className="bg-[#0a0a0a] p-6 md:p-8 rounded-2xl border border-white/5 space-y-6">
+          <div className="border-b border-white/10 pb-4">
+            <div className="flex items-center gap-2">
+              <BarChart2 className="text-accent" size={22} />
+              <h2 className="text-xl font-bold text-white">Homepage Statistics & Tagline</h2>
+            </div>
+            <p className="text-gray-400 text-xs mt-1">
+              Customize the inspirational quote and the 4 statistics counters shown on the homepage dark section.
+            </p>
+          </div>
+
+          {/* Tagline Quote */}
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-1.5">
+              Tagline Quote (Displayed above counters)
+            </label>
+            <textarea
+              rows={2}
+              value={formData.statsQuote}
+              onChange={(e) => setFormData({ ...formData, statsQuote: e.target.value })}
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-accent outline-none text-sm resize-none"
+              placeholder="e.g. “Empowering homes and businesses with intelligent security solutions and world-class creative design & printing services.”"
+            />
+          </div>
+
+          {/* 4 Statistics Grid */}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Stat 1 */}
+            <div className="bg-white/[0.02] border border-white/10 p-4 rounded-xl space-y-3">
+              <div className="flex items-center gap-2 text-accent text-xs font-bold uppercase tracking-wider">
+                <Shield size={16} /> Counter 1
+              </div>
+              <div>
+                <label className="block text-[11px] text-gray-400 mb-1">Number / Value</label>
+                <input
+                  type="text"
+                  value={formData.stat1Value}
+                  onChange={(e) => setFormData({ ...formData, stat1Value: e.target.value })}
+                  placeholder="1500"
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-accent outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-[11px] text-gray-400 mb-1">Suffix</label>
+                <input
+                  type="text"
+                  value={formData.stat1Suffix}
+                  onChange={(e) => setFormData({ ...formData, stat1Suffix: e.target.value })}
+                  placeholder="+"
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-accent outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-[11px] text-gray-400 mb-1">Label</label>
+                <input
+                  type="text"
+                  value={formData.stat1Label}
+                  onChange={(e) => setFormData({ ...formData, stat1Label: e.target.value })}
+                  placeholder="PROJECTS COMPLETED"
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-xs uppercase focus:border-accent outline-none"
+                />
+              </div>
+            </div>
+
+            {/* Stat 2 */}
+            <div className="bg-white/[0.02] border border-white/10 p-4 rounded-xl space-y-3">
+              <div className="flex items-center gap-2 text-accent text-xs font-bold uppercase tracking-wider">
+                <Award size={16} /> Counter 2
+              </div>
+              <div>
+                <label className="block text-[11px] text-gray-400 mb-1">Number / Value</label>
+                <input
+                  type="text"
+                  value={formData.stat2Value}
+                  onChange={(e) => setFormData({ ...formData, stat2Value: e.target.value })}
+                  placeholder="10"
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-accent outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-[11px] text-gray-400 mb-1">Suffix</label>
+                <input
+                  type="text"
+                  value={formData.stat2Suffix}
+                  onChange={(e) => setFormData({ ...formData, stat2Suffix: e.target.value })}
+                  placeholder="+"
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-accent outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-[11px] text-gray-400 mb-1">Label</label>
+                <input
+                  type="text"
+                  value={formData.stat2Label}
+                  onChange={(e) => setFormData({ ...formData, stat2Label: e.target.value })}
+                  placeholder="YEARS OF EXPERIENCE"
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-xs uppercase focus:border-accent outline-none"
+                />
+              </div>
+            </div>
+
+            {/* Stat 3 */}
+            <div className="bg-white/[0.02] border border-white/10 p-4 rounded-xl space-y-3">
+              <div className="flex items-center gap-2 text-accent text-xs font-bold uppercase tracking-wider">
+                <ThumbsUp size={16} /> Counter 3
+              </div>
+              <div>
+                <label className="block text-[11px] text-gray-400 mb-1">Number / Value</label>
+                <input
+                  type="text"
+                  value={formData.stat3Value}
+                  onChange={(e) => setFormData({ ...formData, stat3Value: e.target.value })}
+                  placeholder="98"
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-accent outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-[11px] text-gray-400 mb-1">Suffix</label>
+                <input
+                  type="text"
+                  value={formData.stat3Suffix}
+                  onChange={(e) => setFormData({ ...formData, stat3Suffix: e.target.value })}
+                  placeholder="%"
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-accent outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-[11px] text-gray-400 mb-1">Label</label>
+                <input
+                  type="text"
+                  value={formData.stat3Label}
+                  onChange={(e) => setFormData({ ...formData, stat3Label: e.target.value })}
+                  placeholder="CLIENT SATISFACTION"
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-xs uppercase focus:border-accent outline-none"
+                />
+              </div>
+            </div>
+
+            {/* Stat 4 */}
+            <div className="bg-white/[0.02] border border-white/10 p-4 rounded-xl space-y-3">
+              <div className="flex items-center gap-2 text-accent text-xs font-bold uppercase tracking-wider">
+                <Headset size={16} /> Counter 4
+              </div>
+              <div>
+                <label className="block text-[11px] text-gray-400 mb-1">Number / Value</label>
+                <input
+                  type="text"
+                  value={formData.stat4Value}
+                  onChange={(e) => setFormData({ ...formData, stat4Value: e.target.value })}
+                  placeholder="24"
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-accent outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-[11px] text-gray-400 mb-1">Suffix</label>
+                <input
+                  type="text"
+                  value={formData.stat4Suffix}
+                  onChange={(e) => setFormData({ ...formData, stat4Suffix: e.target.value })}
+                  placeholder="/7"
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-accent outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-[11px] text-gray-400 mb-1">Label</label>
+                <input
+                  type="text"
+                  value={formData.stat4Label}
+                  onChange={(e) => setFormData({ ...formData, stat4Label: e.target.value })}
+                  placeholder="SUPPORT"
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-xs uppercase focus:border-accent outline-none"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Live Counter Section Preview */}
+          <div className="p-4 rounded-2xl bg-[#121514] border border-[#C6A15B]/30 shadow-inner">
+            <span className="text-[11px] font-bold text-[#C6A15B] tracking-wider uppercase block mb-2">
+              Live Preview on Homepage:
+            </span>
+            <p className="text-center text-slate-300 text-xs italic mb-4 max-w-xl mx-auto">
+              {formData.statsQuote || '“Tagline quote preview”'}
+            </p>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+              <div className="p-2">
+                <div className="text-xl sm:text-2xl font-black text-[#FAF9F5]">
+                  {formData.stat1Value || '1500'}<span className="text-[#C6A15B]">{formData.stat1Suffix || '+'}</span>
+                </div>
+                <div className="text-[9px] font-bold text-gray-400 uppercase tracking-wider">{formData.stat1Label || 'PROJECTS COMPLETED'}</div>
+              </div>
+              <div className="p-2">
+                <div className="text-xl sm:text-2xl font-black text-[#FAF9F5]">
+                  {formData.stat2Value || '10'}<span className="text-[#C6A15B]">{formData.stat2Suffix || '+'}</span>
+                </div>
+                <div className="text-[9px] font-bold text-gray-400 uppercase tracking-wider">{formData.stat2Label || 'YEARS OF EXPERIENCE'}</div>
+              </div>
+              <div className="p-2">
+                <div className="text-xl sm:text-2xl font-black text-[#FAF9F5]">
+                  {formData.stat3Value || '98'}<span className="text-[#C6A15B]">{formData.stat3Suffix || '%'}</span>
+                </div>
+                <div className="text-[9px] font-bold text-gray-400 uppercase tracking-wider">{formData.stat3Label || 'CLIENT SATISFACTION'}</div>
+              </div>
+              <div className="p-2">
+                <div className="text-xl sm:text-2xl font-black text-[#FAF9F5]">
+                  {formData.stat4Value || '24'}<span className="text-[#C6A15B]">{formData.stat4Suffix || '/7'}</span>
+                </div>
+                <div className="text-[9px] font-bold text-gray-400 uppercase tracking-wider">{formData.stat4Label || 'SUPPORT'}</div>
+              </div>
             </div>
           </div>
         </div>
