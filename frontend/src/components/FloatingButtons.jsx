@@ -2,10 +2,22 @@ import { PhoneCall, ArrowUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import api from '../api';
 
 const FloatingButtons = () => {
   const location = useLocation();
   const [isVisible, setIsVisible] = useState(false);
+  const [phone, setPhone] = useState('+91 98765 43210');
+
+  useEffect(() => {
+    let isMounted = true;
+    api.get('/settings').then(({ data }) => {
+      if (isMounted && data && data.phoneMain) {
+        setPhone(data.phoneMain);
+      }
+    }).catch(() => {});
+    return () => { isMounted = false; };
+  }, []);
 
   useEffect(() => {
     const toggleVisibility = () => {
@@ -16,7 +28,7 @@ const FloatingButtons = () => {
       }
     };
 
-    window.addEventListener('scroll', toggleVisibility);
+    window.addEventListener('scroll', toggleVisibility, { passive: true });
     return () => window.removeEventListener('scroll', toggleVisibility);
   }, []);
 
@@ -32,12 +44,15 @@ const FloatingButtons = () => {
     return null;
   }
 
+  const cleanNumber = phone.replace(/[^0-9]/g, '');
+  const waNumber = cleanNumber.length === 10 ? `91${cleanNumber}` : cleanNumber;
+
   return (
     <div className="fixed bottom-[88px] right-3 sm:bottom-24 sm:right-6 lg:bottom-8 lg:right-8 z-40 flex flex-col gap-2.5 sm:gap-3 pointer-events-none pb-[env(safe-area-inset-bottom)]">
       
-      {/* Phone Call Floating Button — White Background & Solid Black Icon as requested */}
+      {/* Phone Call Floating Button */}
       <motion.a
-        href="tel:+919876543210"
+        href={`tel:${phone}`}
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ delay: 0.8, type: "spring", stiffness: 260, damping: 20 }}
@@ -53,13 +68,13 @@ const FloatingButtons = () => {
 
         {/* Tooltip on Hover */}
         <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-1.5 rounded-xl bg-[#080A09]/95 backdrop-blur-md border border-[#C6A15B]/40 text-white text-[11px] font-bold tracking-wide whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 shadow-xl pointer-events-none hidden sm:block">
-          Call Us Now (+91 9876 543210)
+          Call Us Now ({phone})
         </span>
       </motion.a>
 
       {/* WhatsApp Floating Button */}
       <motion.a
-        href="https://wa.me/919876543210"
+        href={`https://wa.me/${waNumber}`}
         target="_blank"
         rel="noopener noreferrer"
         initial={{ scale: 0 }}
