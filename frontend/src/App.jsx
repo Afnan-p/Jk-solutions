@@ -84,7 +84,7 @@ function App() {
             <Route path="/contact" element={<ContactPage />} />
 
             {/* Admin Routes */}
-            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/admin/jasim" element={<AdminLogin />} />
             <Route path="/admin" element={<AdminLayout />}>
               <Route path="dashboard" element={<DashboardHome />} />
               <Route path="enquiries" element={<ManageEnquiries />} />

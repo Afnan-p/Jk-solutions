@@ -12,7 +12,7 @@ const AdminLayout = () => {
   useEffect(() => {
     const userInfo = localStorage.getItem('adminInfo');
     if (!userInfo) {
-      navigate('/admin/login');
+      navigate('/');
     } else {
       setAdminUser(JSON.parse(userInfo));
     }
@@ -34,7 +34,7 @@ const AdminLayout = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('adminInfo');
-    navigate('/admin/login');
+    navigate('/admin/jasim');
   };
 
   const navItems = [
