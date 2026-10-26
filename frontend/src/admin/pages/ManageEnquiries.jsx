@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Mail, Phone, Calendar, Trash2, ChevronDown } from 'lucide-react';
 import api from '../../api';
+import { useToast } from '../components/Toast';
 
 const ManageEnquiries = () => {
+  const { toast } = useToast();
   const [enquiries, setEnquiries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -28,8 +30,9 @@ const ManageEnquiries = () => {
       await api.put(`/enquiries/${id}`, { status: newStatus });
       // Update local state to reflect change immediately
       setEnquiries(enquiries.map(enq => enq._id === id ? { ...enq, status: newStatus } : enq));
+      toast.success(`Enquiry marked as ${newStatus}`);
     } catch (error) {
-      alert('Error updating status');
+      toast.error('Error updating enquiry status');
     }
   };
 
@@ -38,8 +41,9 @@ const ManageEnquiries = () => {
       try {
         await api.delete(`/enquiries/${id}`);
         setEnquiries(enquiries.filter(enq => enq._id !== id));
+        toast.success('Enquiry deleted successfully');
       } catch (error) {
-        alert('Error deleting enquiry');
+        toast.error('Error deleting enquiry');
       }
     }
   };

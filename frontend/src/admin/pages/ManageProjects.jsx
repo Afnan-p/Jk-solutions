@@ -4,8 +4,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Edit2, Trash2, Search, Star, X, Upload, ChevronDown, Images, Loader2 } from 'lucide-react';
 import api from '../../api';
 import Button from '../../components/Button';
+import { useToast } from '../components/Toast';
 
 const ManageProjects = () => {
+  const { toast } = useToast();
   const { division } = useParams();
   const divisionName = division === 'design' ? 'Design & Printing' : 'Security Solutions';
 
@@ -114,8 +116,9 @@ const ManageProjects = () => {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       setFormData({ ...formData, coverImage: data.url });
+      toast.success('Cover image uploaded successfully');
     } catch (error) {
-      alert('Error uploading image');
+      toast.error('Error uploading cover image');
     } finally {
       setUploading(false);
     }
@@ -141,10 +144,11 @@ const ManageProjects = () => {
           ...prev,
           gallery: [...(prev.gallery || []), ...data.urls]
         }));
+        toast.success(`${data.urls.length} gallery image(s) uploaded successfully`);
       }
     } catch (error) {
       console.error('Gallery upload error:', error);
-      alert('Error uploading gallery images. Please try again.');
+      toast.error('Error uploading gallery images. Please try again.');
     } finally {
       setUploadingGallery(false);
       e.target.value = '';
@@ -156,6 +160,7 @@ const ManageProjects = () => {
       ...prev,
       gallery: (prev.gallery || []).filter((_, idx) => idx !== indexToRemove)
     }));
+    toast.info('Gallery image removed');
   };
 
   const handleSubmit = async (e) => {
@@ -163,14 +168,16 @@ const ManageProjects = () => {
     try {
       if (editingProject) {
         await api.put(`/projects/${editingProject._id}`, formData);
+        toast.success('Project updated successfully');
       } else {
         await api.post('/projects', formData);
+        toast.success('Project created successfully');
       }
       
       handleCloseModal();
       fetchProjects();
     } catch (error) {
-      alert(error.response?.data?.message || 'Error saving project');
+      toast.error(error.response?.data?.message || 'Error saving project');
     }
   };
 
@@ -179,8 +186,9 @@ const ManageProjects = () => {
       try {
         await api.delete(`/projects/${id}`);
         fetchProjects();
+        toast.success('Project deleted successfully');
       } catch (error) {
-        alert('Error deleting project');
+        toast.error('Error deleting project');
       }
     }
   };

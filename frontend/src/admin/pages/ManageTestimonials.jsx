@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Edit2, Trash2, X, Star, Upload, MessageSquareQuote, ChevronDown } from 'lucide-react';
 import api from '../../api';
+import { useToast } from '../components/Toast';
 
 const ManageTestimonials = () => {
+  const { toast } = useToast();
   const [testimonials, setTestimonials] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTestimonial, setEditingTestimonial] = useState(null);
@@ -70,8 +72,9 @@ const ManageTestimonials = () => {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       setFormData({ ...formData, image: data.url });
+      toast.success('Testimonial image uploaded successfully');
     } catch (error) {
-      alert('Error uploading image');
+      toast.error('Error uploading image');
     } finally {
       setUploading(false);
     }
@@ -82,13 +85,15 @@ const ManageTestimonials = () => {
     try {
       if (editingTestimonial) {
         await api.put(`/testimonials/${editingTestimonial._id}`, formData);
+        toast.success('Testimonial updated successfully');
       } else {
         await api.post('/testimonials', formData);
+        toast.success('Testimonial added successfully');
       }
       handleCloseModal();
       fetchTestimonials();
     } catch (error) {
-      alert(error.response?.data?.message || 'Error saving testimonial');
+      toast.error(error.response?.data?.message || 'Error saving testimonial');
     }
   };
 
@@ -97,8 +102,9 @@ const ManageTestimonials = () => {
       try {
         await api.delete(`/testimonials/${id}`);
         fetchTestimonials();
+        toast.success('Testimonial deleted successfully');
       } catch (error) {
-        alert('Error deleting testimonial');
+        toast.error('Error deleting testimonial');
       }
     }
   };

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Outlet, useNavigate, Link, useLocation } from 'react-router-dom';
 import { LayoutDashboard, Settings, LogOut, Menu, X, Users, Briefcase, FileText, Star } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ToastProvider } from './Toast';
 
 const AdminLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -60,7 +61,8 @@ const AdminLayout = () => {
   if (!adminUser) return null;
 
   return (
-    <div className="h-screen overflow-hidden bg-[#050505] text-white flex">
+    <ToastProvider>
+      <div className="h-screen overflow-hidden bg-[#050505] text-white flex">
       {/* Sidebar Overlay for Mobile */}
       <AnimatePresence>
         {sidebarOpen && (
@@ -225,7 +227,8 @@ const AdminLayout = () => {
           <Outlet />
         </div>
       </main>
-    </div>
+      </div>
+    </ToastProvider>
   );
 };
 

@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Save, Upload, ShieldCheck, Mail, Lock, Key, AlertCircle, CheckCircle, Eye, EyeOff } from 'lucide-react';
+import { Save, Upload, ShieldCheck, Mail, Lock, Key, AlertCircle, CheckCircle, Eye, EyeOff, Trash2, Award } from 'lucide-react';
 import api from '../../api';
+import { useToast } from '../components/Toast';
 
 const ManageSettings = () => {
+  const { toast } = useToast();
   const [formData, setFormData] = useState({
     phoneMain: '',
     phoneSupport: '',
@@ -96,8 +98,9 @@ const ManageSettings = () => {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       setFormData({ ...formData, founderImage: data.url });
+      toast.success('Founder profile photo uploaded! Remember to click "Save All Settings".');
     } catch (error) {
-      alert('Error uploading image');
+      toast.error('Error uploading image. Please check file format.');
     } finally {
       setUploading(false);
     }
@@ -109,10 +112,11 @@ const ManageSettings = () => {
     setMessage('');
     try {
       await api.put('/settings', formData);
+      toast.success('All settings, founder profile, and contact details saved successfully!');
       setMessage('Settings updated successfully!');
       setTimeout(() => setMessage(''), 3000);
     } catch (error) {
-      alert(error.response?.data?.message || 'Error updating settings');
+      toast.error(error.response?.data?.message || 'Error updating settings');
     } finally {
       setSaving(false);
     }
@@ -135,17 +139,23 @@ const ManageSettings = () => {
     setSecurityMessage({ type: '', text: '' });
 
     if (!securityData.currentPassword) {
-      setSecurityMessage({ type: 'error', text: 'Please enter your current password to authorize changes.' });
+      const errText = 'Please enter your current password to authorize changes.';
+      setSecurityMessage({ type: 'error', text: errText });
+      toast.error(errText);
       return;
     }
 
     if (securityData.newPassword) {
       if (securityData.newPassword.length < 6) {
-        setSecurityMessage({ type: 'error', text: 'New password must be at least 6 characters long.' });
+        const errText = 'New password must be at least 6 characters long.';
+        setSecurityMessage({ type: 'error', text: errText });
+        toast.error(errText);
         return;
       }
       if (securityData.newPassword !== securityData.confirmPassword) {
-        setSecurityMessage({ type: 'error', text: 'New password and confirmation do not match.' });
+        const errText = 'New password and confirmation do not match.';
+        setSecurityMessage({ type: 'error', text: errText });
+        toast.error(errText);
         return;
       }
     }
@@ -162,7 +172,9 @@ const ManageSettings = () => {
       const stored = JSON.parse(localStorage.getItem('adminInfo') || '{}');
       localStorage.setItem('adminInfo', JSON.stringify({ ...stored, ...data }));
 
-      setSecurityMessage({ type: 'success', text: data.message || 'Admin credentials updated successfully!' });
+      const successText = data.message || 'Admin credentials updated successfully!';
+      setSecurityMessage({ type: 'success', text: successText });
+      toast.success(successText);
       setSecurityData((prev) => ({
         ...prev,
         currentPassword: '',
@@ -171,17 +183,11 @@ const ManageSettings = () => {
       }));
     } catch (err) {
       console.error('Update credentials error:', err);
-      if (err.response?.status === 401) {
-        setSecurityMessage({
-          type: 'error',
-          text: err.response?.data?.message || 'Your session has expired. Please log out from the bottom-left menu and log in again.'
-        });
-      } else {
-        setSecurityMessage({
-          type: 'error',
-          text: err.response?.data?.message || err.message || 'Failed to update credentials. Please check your current password.',
-        });
-      }
+      const errMsg = err.response?.status === 401 
+        ? (err.response?.data?.message || 'Current password incorrect or session expired.')
+        : (err.response?.data?.message || err.message || 'Failed to update credentials.');
+      setSecurityMessage({ type: 'error', text: errMsg });
+      toast.error(errMsg);
     } finally {
       setSecurityLoading(false);
     }
@@ -349,44 +355,126 @@ const ManageSettings = () => {
         
         {/* Founder Profile Section */}
         <div className="bg-[#0a0a0a] p-6 md:p-8 rounded-2xl border border-white/5 space-y-6">
-          <h2 className="text-xl font-bold text-white border-b border-white/10 pb-4">Founder / Contact Page Profile</h2>
+          <div className="flex items-center justify-between border-b border-white/10 pb-4">
+            <div>
+              <h2 className="text-xl font-bold text-white">Founder / Contact Page Profile</h2>
+              <p className="text-gray-400 text-xs mt-1">Portrait photos, transparent PNGs, or 3D avatars will be seamlessly framed without head/hand cropping.</p>
+            </div>
+            {formData.founderImage && (
+              <button
+                type="button"
+                onClick={() => {
+                  setFormData({ ...formData, founderImage: '' });
+                  toast.info('Founder photo removed. Click "Save All Settings" to apply.');
+                }}
+                className="text-xs text-rose-400 hover:text-rose-300 flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-rose-500/10 transition-colors"
+              >
+                <Trash2 size={14} />
+                Remove Photo
+              </button>
+            )}
+          </div>
           
-          <div className="flex flex-col md:flex-row gap-8 items-start">
-            <div className="flex-shrink-0">
-              <label className="block text-sm font-medium text-gray-400 mb-2">Profile Image (Transparent PNG)</label>
-              <div className="w-32 h-40 bg-white/5 border-2 border-dashed border-white/20 rounded-2xl flex flex-col items-center justify-center relative overflow-hidden group">
+          <div className="flex flex-col lg:flex-row gap-8 items-start">
+            {/* Portrait Image Uploader with Matching Frame */}
+            <div className="flex-shrink-0 flex flex-col items-center">
+              <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
+                Executive Portrait
+              </label>
+              
+              <div className="relative w-36 h-48 sm:w-40 sm:h-52 bg-gradient-to-b from-[#161a19] via-[#0b0e0d] to-[#040605] border-2 border-accent/50 rounded-2xl flex items-end justify-center p-2 relative overflow-hidden group shadow-2xl">
+                {/* Ambient Radial Spotlight */}
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,rgba(198,161,91,0.25),transparent_70%)] pointer-events-none" />
+                
                 {formData.founderImage ? (
-                  <img src={formData.founderImage} alt="Founder" className="w-full h-full object-contain" />
+                  <img 
+                    src={formData.founderImage} 
+                    alt="Founder" 
+                    className="relative z-10 w-full h-full object-contain object-bottom drop-shadow-[0_10px_15px_rgba(0,0,0,0.6)]" 
+                  />
                 ) : (
-                  <span className="text-gray-500 text-sm">No Image</span>
+                  <div className="relative z-10 text-center pb-8">
+                    <Upload size={32} className="mx-auto text-gray-500 mb-2" />
+                    <span className="text-gray-400 text-xs font-medium">Click to Upload Photo</span>
+                  </div>
                 )}
-                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity cursor-pointer">
-                  <Upload size={24} className="text-white" />
-                  <input type="file" accept="image/*" className="absolute inset-0 opacity-0 cursor-pointer" onChange={handleFileUpload} disabled={uploading} />
-                </div>
+                
+                {/* Hover overlay with button */}
+                <label className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition-all duration-200 cursor-pointer z-20 backdrop-blur-xs">
+                  <Upload size={24} className="text-accent mb-1 animate-bounce" />
+                  <span className="text-xs font-bold text-white">
+                    {formData.founderImage ? 'Change Image' : 'Select Photo'}
+                  </span>
+                  <span className="text-[10px] text-gray-300 mt-0.5">PNG, JPG, or WEBP</span>
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    className="hidden" 
+                    onChange={handleFileUpload} 
+                    disabled={uploading} 
+                  />
+                </label>
               </div>
-              {uploading && <p className="text-accent text-xs mt-2 text-center">Uploading...</p>}
+
+              {uploading && (
+                <div className="flex items-center gap-1.5 text-accent text-xs font-semibold mt-3 animate-pulse">
+                  <div className="w-2 h-2 rounded-full bg-accent animate-ping" />
+                  Uploading to Cloudinary...
+                </div>
+              )}
             </div>
 
-            <div className="flex-grow space-y-4 w-full">
-              <div>
-                <label className="block text-sm font-medium text-gray-400 mb-1">Founder Name</label>
-                <input 
-                  type="text" 
-                  value={formData.founderName}
-                  onChange={(e) => setFormData({...formData, founderName: e.target.value})}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-accent outline-none"
-                />
+            {/* Inputs & Live Mini Preview */}
+            <div className="flex-grow space-y-5 w-full">
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-1.5">Founder Name</label>
+                  <input 
+                    type="text" 
+                    value={formData.founderName}
+                    placeholder="e.g. Jasim Kdr"
+                    onChange={(e) => setFormData({...formData, founderName: e.target.value})}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-accent outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-1.5">Founder Role</label>
+                  <input 
+                    type="text" 
+                    value={formData.founderRole}
+                    placeholder="e.g. Chief Designer & Founder"
+                    onChange={(e) => setFormData({...formData, founderRole: e.target.value})}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-accent outline-none"
+                  />
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-400 mb-1">Founder Role</label>
-                <input 
-                  type="text" 
-                  value={formData.founderRole}
-                  onChange={(e) => setFormData({...formData, founderRole: e.target.value})}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-accent outline-none"
-                />
+
+              {/* Live Preview of Contact Page Card */}
+              <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10">
+                <span className="text-[11px] font-bold text-[#C6A15B] tracking-wider uppercase block mb-3">
+                  Live Preview on Contact Page:
+                </span>
+                <div className="bg-white rounded-2xl p-4 border border-[#C6A15B]/40 shadow-xl flex items-center gap-4 max-w-md">
+                  <div className="relative w-16 h-20 rounded-xl bg-gradient-to-b from-[#161a19] to-[#040605] border border-[#C6A15B] overflow-hidden flex items-end justify-center p-1 shrink-0">
+                    {formData.founderImage ? (
+                      <img src={formData.founderImage} alt="Preview" className="w-full h-full object-contain object-bottom drop-shadow" />
+                    ) : (
+                      <span className="text-[10px] text-gray-400">No Image</span>
+                    )}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#C6A15B]/15 text-[#9E8148] text-[9px] font-extrabold uppercase">
+                      <Award size={10} />
+                      {formData.founderRole || 'Founder Role'}
+                    </span>
+                    <h4 className="font-extrabold text-base text-[#111] truncate mt-0.5">
+                      {formData.founderName || 'Founder Name'}
+                    </h4>
+                    <p className="text-[11px] text-[#C6A15B] font-bold">JK Solutions Executive Leadership</p>
+                  </div>
+                </div>
               </div>
+
             </div>
           </div>
         </div>

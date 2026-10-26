@@ -4,8 +4,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Edit2, Trash2, Search, CheckCircle, XCircle, X, Upload, ChevronDown } from 'lucide-react';
 import api from '../../api';
 import Button from '../../components/Button';
+import { useToast } from '../components/Toast';
 
 const ManageServices = () => {
+  const { toast } = useToast();
   const { division } = useParams();
   const divisionName = division === 'design' ? 'Design & Printing' : 'Security Solutions';
 
@@ -113,8 +115,9 @@ const ManageServices = () => {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       setFormData({ ...formData, image: data.url });
+      toast.success('Service image uploaded successfully');
     } catch (error) {
-      alert('Error uploading image');
+      toast.error('Error uploading service image');
     } finally {
       setUploading(false);
     }
@@ -134,14 +137,16 @@ const ManageServices = () => {
 
       if (editingService) {
         await api.put(`/services/${editingService._id}`, payload);
+        toast.success('Service updated successfully');
       } else {
         await api.post('/services', payload);
+        toast.success('Service created successfully');
       }
       
       handleCloseModal();
       fetchServices();
     } catch (error) {
-      alert(error.response?.data?.message || 'Error saving service');
+      toast.error(error.response?.data?.message || 'Error saving service');
     }
   };
 
@@ -150,8 +155,9 @@ const ManageServices = () => {
       try {
         await api.delete(`/services/${id}`);
         fetchServices();
+        toast.success('Service deleted successfully');
       } catch (error) {
-        alert('Error deleting service');
+        toast.error('Error deleting service');
       }
     }
   };

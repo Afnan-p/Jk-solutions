@@ -389,8 +389,10 @@ const ContactPage = () => {
               <div className="bg-white border border-[#C6A15B]/35 rounded-3xl p-6 shadow-xl relative overflow-hidden">
                 <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5">
                   
-                  {/* Portrait Avatar Container - Framed Half Image */}
-                  <div className="relative w-28 h-28 sm:w-32 sm:h-32 rounded-2xl overflow-hidden border-2 border-[#C6A15B] shadow-md shrink-0 bg-gradient-to-t from-[#080A09] to-slate-900 group">
+                  {/* Portrait Executive Profile Frame - Adapts perfectly to cutouts & photos without cutting */}
+                  <div className="relative w-32 h-40 sm:w-36 sm:h-44 rounded-2xl overflow-hidden border-2 border-[#C6A15B] shadow-lg shrink-0 bg-gradient-to-b from-[#161a19] via-[#0b0e0d] to-[#040605] flex items-end justify-center p-1.5 group">
+                    {/* Ambient Gold Radial Glow */}
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,rgba(198,161,91,0.25),transparent_70%)] pointer-events-none" />
                     <img 
                       src={s.founderImage} 
                       alt={s.founderName}
@@ -398,7 +400,7 @@ const ContactPage = () => {
                         e.target.onerror = null;
                         e.target.src = 'https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=800';
                       }}
-                      className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500" 
+                      className="relative z-10 w-full h-full object-contain object-bottom group-hover:scale-105 transition-transform duration-500 drop-shadow-[0_10px_15px_rgba(0,0,0,0.6)]" 
                     />
                   </div>
 
